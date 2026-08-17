@@ -7,6 +7,7 @@ type Edge[E any, V any] interface {
 type Vertex[V any] interface {
 	IsVisited() bool
 	SetVisited()
+	Value() V
 }
 
 type Graph[V any, E any] interface {
