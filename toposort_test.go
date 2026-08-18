@@ -42,13 +42,6 @@ func TestSort(t *testing.T) {
 
 	DAG := graph.New[string, string]()
 
-	DAG.AddVertex(&A)
-	DAG.AddVertex(&B)
-	DAG.AddVertex(&C)
-	DAG.AddVertex(&D)
-	DAG.AddVertex(&E)
-	DAG.AddVertex(&F)
-
 	DAG.AddEdge(edge.New("AB", &A, &B))
 	DAG.AddEdge(edge.New("AC", &A, &C))
 	DAG.AddEdge(edge.New("BC", &B, &C))
