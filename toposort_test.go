@@ -71,7 +71,7 @@ func TestSort(t *testing.T) {
 	E := testVertex[string]{value: "E"}
 	F := testVertex[string]{value: "F"}
 
-	DAG := dag[string, int]{vertices: []vertex.Vertex[string]{}, outgoingEdges: make(map[vertex.Vertex[string]][]edge.Edge[int, string])}
+	DAG := dag[string, string]{vertices: []vertex.Vertex[string]{}, outgoingEdges: make(map[vertex.Vertex[string]][]edge.Edge[string, string])}
 
 	DAG.AddVertex(&A)
 	DAG.AddVertex(&B)
