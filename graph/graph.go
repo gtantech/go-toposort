@@ -1,16 +1,11 @@
 package graph
 
-type Edge[E any, V any] interface {
-	GetDestination() Vertex[V]
-}
-
-type Vertex[V any] interface {
-	IsVisited() bool
-	SetVisited()
-	Value() V
-}
+import (
+	"github.com/gtantech/go-toposort/graph/edge"
+	"github.com/gtantech/go-toposort/graph/vertex"
+)
 
 type Graph[V any, E any] interface {
-	OutgoingEdges(vertex Vertex[V]) []Edge[E, V]
-	Vertices() []Vertex[V]
+	OutgoingEdges(vertex vertex.Vertex[V]) []edge.Edge[E, V]
+	Vertices() []vertex.Vertex[V]
 }

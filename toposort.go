@@ -3,11 +3,12 @@ package toposort
 import (
 	"github.com/gtantech/go-container/stack"
 	"github.com/gtantech/go-toposort/graph"
+	"github.com/gtantech/go-toposort/graph/vertex"
 )
 
-func dfsTopo[V any, E any](g graph.Graph[V, E], v graph.Vertex[V]) []graph.Vertex[V] {
-	s := stack.New[graph.Vertex[V]]()
-	order := []graph.Vertex[V]{}
+func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V]) []vertex.Vertex[V] {
+	s := stack.New[vertex.Vertex[V]]()
+	order := []vertex.Vertex[V]{}
 	v.SetVisited()
 	s.Push(v)
 	for !s.IsEmpty() {
@@ -27,15 +28,15 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v graph.Vertex[V]) []graph.Verte
 			}
 		}
 		if !foundUnexploredEdge {
-			order = append([]graph.Vertex[V]{top}, order...)
+			order = append([]vertex.Vertex[V]{top}, order...)
 			s.Pop()
 		}
 	}
 	return order
 }
 
-func TopologicalSort[V any, E any](g graph.Graph[V, E]) []graph.Vertex[V] {
-	order := []graph.Vertex[V]{}
+func TopologicalSort[V any, E any](g graph.Graph[V, E]) []vertex.Vertex[V] {
+	order := []vertex.Vertex[V]{}
 	for _, v := range g.Vertices() {
 		if !v.IsVisited() {
 			suborder := dfsTopo(g, v)
