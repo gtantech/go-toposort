@@ -8,4 +8,6 @@ import (
 type Graph[V any, E any] interface {
 	OutgoingEdges(vertex vertex.Vertex[V]) []edge.Edge[E, V]
 	Vertices() []vertex.Vertex[V]
+	AddVertex(v vertex.Vertex[V])
+	AddEdge(e edge.Edge[E, V])
 }
