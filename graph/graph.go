@@ -25,6 +25,10 @@ func New[V any, E any]() Graph[V, E] {
 
 func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
 	d.vertices = append(d.vertices, v)
+	_, ok := d.outgoingEdges[v]
+	if !ok {
+		d.outgoingEdges[v] = []edge.Edge[E, V]{}
+	}
 }
 
 func (d *dag[V, E]) AddEdge(e edge.Edge[E, V]) {
