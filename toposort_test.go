@@ -6,7 +6,6 @@ import (
 
 	"github.com/gtantech/go-toposort/graph"
 	"github.com/gtantech/go-toposort/graph/edge"
-	"github.com/gtantech/go-toposort/graph/vertex"
 )
 
 type testVertex[V any] struct {
@@ -33,36 +32,6 @@ func (v *testVertex[V]) Value() V {
 	return v.value
 }
 
-var _ graph.Graph[string, string] = (*dag[string, string])(nil)
-
-type dag[V any, E any] struct {
-	vertices      []vertex.Vertex[V]
-	outgoingEdges map[vertex.Vertex[V]][]edge.Edge[E, V]
-}
-
-func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
-	d.vertices = append(d.vertices, v)
-}
-
-func (d *dag[V, E]) AddEdge(e edge.Edge[E, V]) {
-	value, ok := d.outgoingEdges[e.GetOrigin()]
-	if !ok {
-		d.outgoingEdges[e.GetOrigin()] = []edge.Edge[E, V]{e}
-	} else {
-		d.outgoingEdges[e.GetOrigin()] = append(value, e)
-	}
-}
-
-// OutgoingEdges implements [graph.Graph].
-func (d *dag[V, E]) OutgoingEdges(vertex vertex.Vertex[V]) []edge.Edge[E, V] {
-	return d.outgoingEdges[vertex]
-}
-
-// Vertices implements [graph.Graph].
-func (d *dag[V, E]) Vertices() []vertex.Vertex[V] {
-	return d.vertices
-}
-
 func TestSort(t *testing.T) {
 	A := testVertex[string]{value: "A"}
 	B := testVertex[string]{value: "B"}
@@ -71,7 +40,7 @@ func TestSort(t *testing.T) {
 	E := testVertex[string]{value: "E"}
 	F := testVertex[string]{value: "F"}
 
-	DAG := dag[string, string]{vertices: []vertex.Vertex[string]{}, outgoingEdges: make(map[vertex.Vertex[string]][]edge.Edge[string, string])}
+	DAG := graph.New[string, string]()
 
 	DAG.AddVertex(&A)
 	DAG.AddVertex(&B)
@@ -88,7 +57,7 @@ func TestSort(t *testing.T) {
 	DAG.AddEdge(edge.New("ED", &E, &D))
 	DAG.AddEdge(edge.New("EF", &E, &F))
 
-	order := TopologicalSort(&DAG)
+	order := TopologicalSort(DAG)
 	A.isVisited = false
 	B.isVisited = false
 	C.isVisited = false
