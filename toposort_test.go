@@ -44,12 +44,12 @@ func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
 	d.vertices = append(d.vertices, v)
 }
 
-func (d *dag[V, E]) AddEdge(origin vertex.Vertex[V], e edge.Edge[E, V]) {
-	value, ok := d.outgoingEdges[origin]
+func (d *dag[V, E]) AddEdge(e edge.Edge[E, V]) {
+	value, ok := d.outgoingEdges[e.GetOrigin()]
 	if !ok {
-		d.outgoingEdges[origin] = []edge.Edge[E, V]{e}
+		d.outgoingEdges[e.GetOrigin()] = []edge.Edge[E, V]{e}
 	} else {
-		d.outgoingEdges[origin] = append(value, e)
+		d.outgoingEdges[e.GetOrigin()] = append(value, e)
 	}
 }
 
@@ -80,13 +80,13 @@ func TestSort(t *testing.T) {
 	DAG.AddVertex(&E)
 	DAG.AddVertex(&F)
 
-	DAG.AddEdge(&A, edge.New("AB", &B))
-	DAG.AddEdge(&A, edge.New("AC", &C))
-	DAG.AddEdge(&B, edge.New("BC", &C))
-	DAG.AddEdge(&B, edge.New("BD", &D))
-	DAG.AddEdge(&C, edge.New("CE", &E))
-	DAG.AddEdge(&E, edge.New("ED", &D))
-	DAG.AddEdge(&E, edge.New("EF", &F))
+	DAG.AddEdge(edge.New("AB", &A, &B))
+	DAG.AddEdge(edge.New("AC", &A, &C))
+	DAG.AddEdge(edge.New("BC", &B, &C))
+	DAG.AddEdge(edge.New("BD", &B, &D))
+	DAG.AddEdge(edge.New("CE", &C, &E))
+	DAG.AddEdge(edge.New("ED", &E, &D))
+	DAG.AddEdge(edge.New("EF", &E, &F))
 
 	order := TopologicalSort(&DAG)
 	A.isVisited = false
