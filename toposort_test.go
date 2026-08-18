@@ -35,7 +35,7 @@ func (v *testVertex[V]) Value() V {
 
 var _ graph.Graph[string, string] = (*dag[string, string])(nil)
 
-type dag[V comparable, E any] struct {
+type dag[V any, E any] struct {
 	vertices      []vertex.Vertex[V]
 	outgoingEdges map[vertex.Vertex[V]][]edge.Edge[E, V]
 }
