@@ -7,6 +7,7 @@ import (
 type Edge[E any, V any] interface {
 	GetDestination() vertex.Vertex[V]
 	GetOrigin() vertex.Vertex[V]
+	Value() E
 }
 
 var _ Edge[string, string] = (*edge[string, string])(nil) //ensures edge implements Edge at compile time
@@ -29,4 +30,9 @@ func (e *edge[E, V]) GetDestination() vertex.Vertex[V] {
 // GetOrigin implements [Edge].
 func (e *edge[E, V]) GetOrigin() vertex.Vertex[V] {
 	return e.origin
+}
+
+// Value implements [Edge].
+func (e *edge[E, V]) Value() E {
+	return e.value
 }
