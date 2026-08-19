@@ -31,9 +31,11 @@ func (d *dag[V, E]) AddEdge(e edge.Edge[E, V]) {
 		d.outgoingEdges[e.GetOrigin()] = append(value, e)
 	}
 	if _, ok := d.uniqueVerticies[e.GetOrigin()]; !ok {
+		d.uniqueVerticies[e.GetOrigin()] = struct{}{}
 		d.vertices = append(d.vertices, e.GetOrigin())
 	}
 	if _, ok := d.uniqueVerticies[e.GetDestination()]; !ok {
+		d.uniqueVerticies[e.GetDestination()] = struct{}{}
 		d.vertices = append(d.vertices, e.GetDestination())
 	}
 }
