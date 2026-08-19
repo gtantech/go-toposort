@@ -20,7 +20,7 @@ type dag[V any, E any] struct {
 }
 
 func New[V any, E any]() Graph[V, E] {
-	return &dag[V, E]{vertices: []vertex.Vertex[V]{}, outgoingEdges: make(map[vertex.Vertex[V]][]edge.Edge[E, V])}
+	return &dag[V, E]{vertices: []vertex.Vertex[V]{}, outgoingEdges: make(map[vertex.Vertex[V]][]edge.Edge[E, V]), uniqueVerticies: make(map[vertex.Vertex[V]]struct{})}
 }
 
 func (d *dag[V, E]) AddEdge(e edge.Edge[E, V]) {
