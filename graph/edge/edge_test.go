@@ -3,7 +3,7 @@ package edge
 import (
 	"testing"
 
-	"github.com/gtantech/go-toposort/graph/vertex"
+	"github.com/gtantech/toposort/graph/vertex"
 )
 
 func TestValue(t *testing.T) {

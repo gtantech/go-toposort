@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gtantech/go-toposort/graph"
-	"github.com/gtantech/go-toposort/graph/edge"
+	"github.com/gtantech/toposort/graph"
+	"github.com/gtantech/toposort/graph/edge"
 )
 
 type testVertex[V any] struct {

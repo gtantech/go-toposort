@@ -1,8 +1,8 @@
 package graph
 
 import (
-	"github.com/gtantech/go-toposort/graph/edge"
-	"github.com/gtantech/go-toposort/graph/vertex"
+	"github.com/gtantech/toposort/graph/edge"
+	"github.com/gtantech/toposort/graph/vertex"
 )
 
 type Graph[V any, E any] interface {

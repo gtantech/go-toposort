@@ -4,8 +4,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/gtantech/go-toposort/graph/edge"
-	"github.com/gtantech/go-toposort/graph/vertex"
+	"github.com/gtantech/toposort/graph/edge"
+	"github.com/gtantech/toposort/graph/vertex"
 )
 
 func TestNew(t *testing.T) {

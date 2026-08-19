@@ -1,7 +1,7 @@
 package edge
 
 import (
-	"github.com/gtantech/go-toposort/graph/vertex"
+	"github.com/gtantech/toposort/graph/vertex"
 )
 
 type Edge[E any, V any] interface {

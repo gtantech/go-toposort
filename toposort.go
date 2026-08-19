@@ -2,8 +2,8 @@ package toposort
 
 import (
 	"github.com/gtantech/go-container/stack"
-	"github.com/gtantech/go-toposort/graph"
-	"github.com/gtantech/go-toposort/graph/vertex"
+	"github.com/gtantech/toposort/graph"
+	"github.com/gtantech/toposort/graph/vertex"
 )
 
 func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V]) []vertex.Vertex[V] {
