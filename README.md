@@ -1,7 +1,11 @@
-# toposort
-A Go package that provides a generic implementation to topological sort a graph.
-
-# Install
+# Topological Sorting for Golang
+Toposort is a Go package that provides a generic implementation to topological sort a graph.
+## Table of Contents
+- [Install](#install)
+- [Example](#example)
+- [User Defined Structs](#user-defined-structs)
+- [License](#license)
+## Install
 Install via `go get`. Note that Go 1.25 or newer is required.
 
 ```sh
@@ -9,7 +13,7 @@ Install via `go get`. Note that Go 1.25 or newer is required.
 go get -u github.com/gtantech/toposort
 ```
 
-# Example
+## Example
 
 ```go
 package main
@@ -59,4 +63,12 @@ func main() {
 
 ## User Defined Structs
 
-The `TopologicalSort` method accepts any structs that implement the interfaces defined in the graph package (graph, edge, vertex).
+The `TopologicalSort` function accepts any structs that implement the interfaces defined in the graph package (graph, edge, vertex).
+
+## License
+
+Licensed under [MIT License](./LICENSE)
+
+## Thanks!
+
+Thanks for reading and happy coding! Add a star to the project if you find it useful!
