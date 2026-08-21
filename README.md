@@ -1,7 +1,20 @@
-# toposort
-A Go package that provides a generic implementation to topological sort a graph.
+# Topological Sorting for Golang
+Toposort is a Go package that provides a generic implementation to topological sort a graph.
+## Table of Contents
+- [What is Topological Sorting](#what-is-topological-sorting)
+- [Why is Topological Sorting Useful](#why-is-topological-sorting-useful)
+- [Install](#install)
+- [Example](#example)
+- [User Defined Structs](#user-defined-structs)
+- [License](#license)
 
-# Install
+## What Is Topological Sorting
+From [Wikipedia](https://en.wikipedia.org/wiki/Topological_sorting), topological sorting of a [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) (DAG) is a linear ordering of its vertices such that when the graph is traversed in that order, every node is visited only when all preceeding nodes connected by a directed edge are visited first.
+
+## Why Is Topological Sorting Useful
+Topological sorting can help order dependencies such as in task scheduling/project management or course scheduling where a prerequisite course must be taken before taking advanced courses.
+
+## Install
 Install via `go get`. Note that Go 1.25 or newer is required.
 
 ```sh
@@ -9,7 +22,7 @@ Install via `go get`. Note that Go 1.25 or newer is required.
 go get -u github.com/gtantech/toposort
 ```
 
-# Example
+## Example
 
 ```go
 package main
@@ -59,4 +72,12 @@ func main() {
 
 ## User Defined Structs
 
-The `TopologicalSort` method accepts any structs that implement the interfaces defined in the graph package (graph, edge, vertex).
+The `TopologicalSort` function accepts any structs that implement the interfaces defined in the graph package (graph, edge, vertex).
+
+## License
+
+Licensed under [MIT License](./LICENSE)
+
+## Thanks!
+
+Thanks for reading and happy coding! Add a star to the project if you find it useful!
