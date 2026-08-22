@@ -50,7 +50,10 @@ func TestSort(t *testing.T) {
 	DAG.AddEdge(edge.New("ED", &E, &D))
 	DAG.AddEdge(edge.New("EF", &E, &F))
 
-	order := TopologicalSort(DAG)
+	order, err := TopologicalSort(DAG)
+	if err != nil {
+		t.Errorf("unexpected error occurred. Error: %v", err)
+	}
 	A.isVisited = false
 	B.isVisited = false
 	C.isVisited = false
@@ -65,5 +68,30 @@ func TestSort(t *testing.T) {
 				t.Fatalf("%v was visited before the current vertex %v", e.GetDestination(), v)
 			}
 		}
+	}
+}
+
+func TestSortWithCycle(t *testing.T) {
+	A := testVertex[string]{value: "A"}
+	B := testVertex[string]{value: "B"}
+	C := testVertex[string]{value: "C"}
+	D := testVertex[string]{value: "D"}
+	E := testVertex[string]{value: "E"}
+	F := testVertex[string]{value: "F"}
+
+	DAG := graph.New[string, string]()
+
+	DAG.AddEdge(edge.New("AB", &A, &B))
+	DAG.AddEdge(edge.New("AC", &A, &C))
+	DAG.AddEdge(edge.New("BC", &B, &C))
+	DAG.AddEdge(edge.New("BD", &B, &D))
+	DAG.AddEdge(edge.New("CE", &C, &E))
+	DAG.AddEdge(edge.New("ED", &E, &D))
+	DAG.AddEdge(edge.New("EF", &E, &F))
+	DAG.AddEdge(edge.New("FA", &F, &A)) //add a return edge from F to A to add a cycle
+
+	_, err := TopologicalSort(DAG)
+	if err == nil {
+		t.Errorf("expected error")
 	}
 }
