@@ -1,8 +1,6 @@
 package toposort
 
 import (
-	"fmt"
-
 	"github.com/gtantech/toposort/graph"
 	"github.com/gtantech/toposort/graph/vertex"
 	"github.com/gtantech/toposort/stack"
@@ -25,7 +23,7 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V]) ([]vertex.Ve
 				//discovery edge
 				foundUnexploredEdge = true
 				if err := s.Push(opposite); err != nil {
-					return nil, fmt.Errorf("encountered cycle in graph for edge: %v from %v to %v", e.Value(), top.Value(), opposite.Value())
+					return nil, &CycleDetectedError[V, E]{Edge: e, Origin: top, Destination: opposite}
 				}
 			}
 		}
