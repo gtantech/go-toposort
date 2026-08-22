@@ -1,12 +1,14 @@
 package toposort
 
 import (
-	"github.com/gtantech/go-container/stack"
+	"fmt"
+
 	"github.com/gtantech/toposort/graph"
 	"github.com/gtantech/toposort/graph/vertex"
+	"github.com/gtantech/toposort/stack"
 )
 
-func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V]) []vertex.Vertex[V] {
+func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V]) ([]vertex.Vertex[V], error) {
 	s := stack.New[vertex.Vertex[V]]()
 	order := []vertex.Vertex[V]{}
 	s.Push(v)
@@ -22,7 +24,9 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V]) []vertex.Ver
 			if !opposite.IsVisited() {
 				//discovery edge
 				foundUnexploredEdge = true
-				s.Push(opposite)
+				if err := s.Push(opposite); err != nil {
+					return nil, fmt.Errorf("encountered cycle in graph for edge: %v from %v to %v", e.Value(), top.Value(), opposite.Value())
+				}
 			}
 		}
 		if !foundUnexploredEdge {
@@ -32,14 +36,17 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V]) []vertex.Ver
 			visited.SetVisited()
 		}
 	}
-	return order
+	return order, nil
 }
 
 func TopologicalSort[V any, E any](g graph.Graph[V, E]) ([]vertex.Vertex[V], error) {
 	order := []vertex.Vertex[V]{}
 	for _, v := range g.Vertices() {
 		if !v.IsVisited() {
-			suborder := dfsTopo(g, v)
+			suborder, err := dfsTopo(g, v)
+			if err != nil {
+				return nil, err
+			}
 			order = append(suborder, order...)
 		}
 	}
