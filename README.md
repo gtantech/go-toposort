@@ -60,7 +60,7 @@ func main() {
 	g.AddEdge(BC)
 
 	//get topological sorted order
-	order := toposort.TopologicalSort(g)
+	order, _ := toposort.TopologicalSort(g)
 
 	//print order
 	for _, v := range order {
