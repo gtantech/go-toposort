@@ -50,7 +50,10 @@ func TestSort(t *testing.T) {
 	DAG.AddEdge(edge.New("ED", &E, &D))
 	DAG.AddEdge(edge.New("EF", &E, &F))
 
-	order := TopologicalSort(DAG)
+	order, err := TopologicalSort(DAG)
+	if err != nil {
+		t.Errorf("unexpected error occurred. Error: %v", err)
+	}
 	A.isVisited = false
 	B.isVisited = false
 	C.isVisited = false

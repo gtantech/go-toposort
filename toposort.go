@@ -35,7 +35,7 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V]) []vertex.Ver
 	return order
 }
 
-func TopologicalSort[V any, E any](g graph.Graph[V, E]) []vertex.Vertex[V] {
+func TopologicalSort[V any, E any](g graph.Graph[V, E]) ([]vertex.Vertex[V], error) {
 	order := []vertex.Vertex[V]{}
 	for _, v := range g.Vertices() {
 		if !v.IsVisited() {
@@ -43,5 +43,5 @@ func TopologicalSort[V any, E any](g graph.Graph[V, E]) []vertex.Vertex[V] {
 			order = append(suborder, order...)
 		}
 	}
-	return order
+	return order, nil
 }
