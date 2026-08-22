@@ -6,6 +6,7 @@ Toposort is a Go package that provides a generic implementation to topological s
 - [Install](#install)
 - [Example](#example)
 - [User Defined Structs](#user-defined-structs)
+- [Error Handling](#error-handling)
 - [License](#license)
 
 ## What Is Topological Sorting
@@ -73,6 +74,24 @@ func main() {
 ## User Defined Structs
 
 The `TopologicalSort` function accepts any structs that implement the interfaces defined in the graph package (graph, edge, vertex).
+
+## Error Handling
+`TopologicalSort` features cycle detection and will return a `CycleDetectedError` when encountering a cycle within the DAG. Below is an error handling example, extending from the above example:
+
+```go
+//get topological sorted order
+order, err := toposort.TopologicalSort(g)
+
+if err != nil {
+	if err, ok := errors.AsType[*toposort.CycleDetectedError[string, int]](err); ok {
+		fmt.Printf("error: encountered cycle within graph at edge %v from %v to %v",
+			err.Edge.Value(),
+			err.Edge.GetOrigin().Value(),
+			err.Edge.GetDestination().Value(),
+		)
+	}
+}
+```
 
 ## License
 
