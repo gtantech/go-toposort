@@ -1,6 +1,7 @@
 package toposort
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/gtantech/toposort/graph"
@@ -25,7 +26,10 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V]) ([]vertex.Ve
 				//discovery edge
 				foundUnexploredEdge = true
 				if err := s.Push(opposite); err != nil {
-					return nil, fmt.Errorf("encountered cycle in graph for edge: %v from %v to %v", e.Value(), top.Value(), opposite.Value())
+					if _, ok := errors.AsType[*stack.DuplicateValuesError[vertex.Vertex[V]]](err); ok {
+						return nil, &CycleDetectedError[V, E]{Edge: e}
+					}
+					panic(fmt.Sprintf("unhandled error: %v", err))
 				}
 			}
 		}

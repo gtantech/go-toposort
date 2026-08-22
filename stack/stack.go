@@ -11,6 +11,14 @@ type uniqueStack[T comparable] struct {
 	uniqueCheck map[T]struct{}
 }
 
+type DuplicateValuesError[T comparable] struct {
+	Value T
+}
+
+func (d *DuplicateValuesError[T]) Error() string {
+	return fmt.Sprintf("pushed duplicate value: %v", d.Value)
+}
+
 func New[T comparable]() *uniqueStack[T] {
 	return &uniqueStack[T]{
 		Stack:       stack.New[T](),
@@ -21,7 +29,7 @@ func New[T comparable]() *uniqueStack[T] {
 // will throw an error when pushed a duplicate value
 func (s *uniqueStack[T]) Push(value T) error {
 	if _, ok := s.uniqueCheck[value]; ok {
-		return fmt.Errorf("pushed duplicate value %v", value)
+		return &DuplicateValuesError[T]{Value: value}
 	}
 	s.Stack.Push(value)
 	s.uniqueCheck[value] = struct{}{}
