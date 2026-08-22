@@ -12,7 +12,7 @@ func TestErrorMsg(t *testing.T) {
 	v1 := vertex.New("1")
 	v2 := vertex.New("2")
 
-	err := CycleDetectedError[string, string]{Edge: edge.New("1-2", v1, v2), Origin: v1, Destination: v2}
+	err := CycleDetectedError[string, string]{Edge: edge.New("1-2", v1, v2)}
 
 	want := fmt.Sprintf("encountered cycle in graph for edge: %v from %v to %v", "1-2", "1", "2")
 	if got := err.Error(); got != want {

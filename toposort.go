@@ -23,7 +23,7 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V]) ([]vertex.Ve
 				//discovery edge
 				foundUnexploredEdge = true
 				if err := s.Push(opposite); err != nil {
-					return nil, &CycleDetectedError[V, E]{Edge: e, Origin: top, Destination: opposite}
+					return nil, &CycleDetectedError[V, E]{Edge: e}
 				}
 			}
 		}
