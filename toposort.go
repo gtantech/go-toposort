@@ -9,7 +9,6 @@ import (
 func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V]) []vertex.Vertex[V] {
 	s := stack.New[vertex.Vertex[V]]()
 	order := []vertex.Vertex[V]{}
-	v.SetVisited()
 	s.Push(v)
 	for !s.IsEmpty() {
 		top := s.Peek()
@@ -23,13 +22,14 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V]) []vertex.Ver
 			if !opposite.IsVisited() {
 				//discovery edge
 				foundUnexploredEdge = true
-				opposite.SetVisited()
 				s.Push(opposite)
 			}
 		}
 		if !foundUnexploredEdge {
+			//all edges explored
 			order = append([]vertex.Vertex[V]{top}, order...)
-			s.Pop()
+			visited := s.Pop()
+			visited.SetVisited()
 		}
 	}
 	return order
