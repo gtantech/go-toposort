@@ -1,7 +1,7 @@
 # Topological Sorting for Golang
 Toposort is a Go package that provides a generic implementation to topological sort a graph.
 
-[![codecov](https://codecov.io/gh/gtantech/toposort/graph/badge.svg)](https://codecov.io/gh/gtantech/toposort)
+[![CI Status](https://github.com/gtantech/toposort/actions/workflows/ci.yaml/badge.svg)](https://github.com/gtantech/toposort/actions/workflows/ci.yaml) [![codecov](https://codecov.io/gh/gtantech/toposort/graph/badge.svg)](https://codecov.io/gh/gtantech/toposort)
 ## Table of Contents
 - [What is Topological Sorting](#what-is-topological-sorting)
 - [Why is Topological Sorting Useful](#why-is-topological-sorting-useful)
