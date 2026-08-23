@@ -6,6 +6,13 @@ import (
 	"github.com/gtantech/go-container/stack"
 )
 
+type Stack[T any] interface {
+	Push(v T) error
+	Pop() T
+	Peek() T
+	IsEmpty() bool
+}
+
 type uniqueStack[T comparable] struct {
 	stack.Stack[T]
 	uniqueCheck map[T]struct{}

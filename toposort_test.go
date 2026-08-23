@@ -6,39 +6,65 @@ import (
 
 	"github.com/gtantech/toposort/graph"
 	"github.com/gtantech/toposort/graph/edge"
+	"github.com/gtantech/toposort/graph/vertex"
+	"github.com/gtantech/toposort/stack"
 )
 
-type testVertex[V any] struct {
+type mockVertex[V any] struct {
 	value     V
 	isVisited bool
 }
 
-func (v *testVertex[V]) String() string {
+func (v *mockVertex[V]) String() string {
 	return fmt.Sprintf("%v", v.value)
 }
 
 // IsVisited implements [graph.Vertex].
-func (v *testVertex[V]) IsVisited() bool {
+func (v *mockVertex[V]) IsVisited() bool {
 	return v.isVisited
 }
 
 // SetVisited implements [graph.Vertex].
-func (v *testVertex[V]) SetVisited() {
+func (v *mockVertex[V]) SetVisited() {
 	v.isVisited = true
 }
 
 // Value implements [graph.Vertex].
-func (v *testVertex[V]) Value() V {
+func (v *mockVertex[V]) Value() V {
 	return v.value
 }
 
+type mockDfsTopoStack[T comparable] struct {
+	stack.Stack[vertex.Vertex[T]]
+}
+
+func (s *mockDfsTopoStack[T]) Push(v vertex.Vertex[T]) error {
+	s.Stack.Push(v)
+	return fmt.Errorf("sent error to panic")
+}
+
+func TestDfsTopoUnhandledStackDuplicateValuesError(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("unhandled error did not panic")
+		}
+	}()
+
+	DAG := graph.New[string, string]()
+	s := mockDfsTopoStack[string]{Stack: stack.New[vertex.Vertex[string]]()}
+	A := mockVertex[string]{value: "A"}
+	B := mockVertex[string]{value: "B"}
+	DAG.AddEdge(edge.New("AB", &A, &B))
+	dfsTopo(DAG, &A, &s)
+}
+
 func TestSort(t *testing.T) {
-	A := testVertex[string]{value: "A"}
-	B := testVertex[string]{value: "B"}
-	C := testVertex[string]{value: "C"}
-	D := testVertex[string]{value: "D"}
-	E := testVertex[string]{value: "E"}
-	F := testVertex[string]{value: "F"}
+	A := mockVertex[string]{value: "A"}
+	B := mockVertex[string]{value: "B"}
+	C := mockVertex[string]{value: "C"}
+	D := mockVertex[string]{value: "D"}
+	E := mockVertex[string]{value: "E"}
+	F := mockVertex[string]{value: "F"}
 
 	DAG := graph.New[string, string]()
 
@@ -72,12 +98,12 @@ func TestSort(t *testing.T) {
 }
 
 func TestSortWithCycle(t *testing.T) {
-	A := testVertex[string]{value: "A"}
-	B := testVertex[string]{value: "B"}
-	C := testVertex[string]{value: "C"}
-	D := testVertex[string]{value: "D"}
-	E := testVertex[string]{value: "E"}
-	F := testVertex[string]{value: "F"}
+	A := mockVertex[string]{value: "A"}
+	B := mockVertex[string]{value: "B"}
+	C := mockVertex[string]{value: "C"}
+	D := mockVertex[string]{value: "D"}
+	E := mockVertex[string]{value: "E"}
+	F := mockVertex[string]{value: "F"}
 
 	DAG := graph.New[string, string]()
 

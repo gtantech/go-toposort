@@ -9,8 +9,7 @@ import (
 	"github.com/gtantech/toposort/stack"
 )
 
-func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V]) ([]vertex.Vertex[V], error) {
-	s := stack.New[vertex.Vertex[V]]()
+func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stack[vertex.Vertex[V]]) ([]vertex.Vertex[V], error) {
 	order := []vertex.Vertex[V]{}
 	s.Push(v)
 	for !s.IsEmpty() {
@@ -47,7 +46,7 @@ func TopologicalSort[V any, E any](g graph.Graph[V, E]) ([]vertex.Vertex[V], err
 	order := []vertex.Vertex[V]{}
 	for _, v := range g.Vertices() {
 		if !v.IsVisited() {
-			suborder, err := dfsTopo(g, v)
+			suborder, err := dfsTopo(g, v, stack.New[vertex.Vertex[V]]())
 			if err != nil {
 				return nil, err
 			}
