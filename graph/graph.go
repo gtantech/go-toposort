@@ -8,6 +8,7 @@ import (
 type Graph[V any, E any] interface {
 	OutgoingEdges(vertex vertex.Vertex[V]) []edge.Edge[E, V]
 	Vertices() []vertex.Vertex[V]
+	AddVertex(v vertex.Vertex[V])
 	AddEdge(e edge.Edge[E, V])
 }
 
@@ -21,6 +22,13 @@ type dag[V any, E any] struct {
 
 func New[V any, E any]() Graph[V, E] {
 	return &dag[V, E]{vertices: []vertex.Vertex[V]{}, outgoingEdges: make(map[vertex.Vertex[V]][]edge.Edge[E, V]), uniqueVerticies: make(map[vertex.Vertex[V]]struct{})}
+}
+
+func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
+	if _, ok := d.uniqueVerticies[v]; !ok {
+		d.uniqueVerticies[v] = struct{}{}
+		d.vertices = append(d.vertices, v)
+	}
 }
 
 func (d *dag[V, E]) AddEdge(e edge.Edge[E, V]) {

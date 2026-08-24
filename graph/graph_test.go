@@ -15,6 +15,22 @@ func TestNew(t *testing.T) {
 	}
 }
 
+func TestAddVertex(t *testing.T) {
+	g := New[int, string]()
+	one := vertex.New(1)
+
+	if len(g.Vertices()) != 0 {
+		t.Error("expected empty graph")
+	}
+
+	g.AddVertex(one)
+
+	if !slices.Contains(g.Vertices(), one) {
+		t.Errorf("missing vertex %v in Verticies()", one)
+	}
+
+}
+
 func TestAddEdges(t *testing.T) {
 	g := New[int, string]()
 	one := vertex.New(1)
