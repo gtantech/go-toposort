@@ -10,6 +10,7 @@ type Graph[V any, E any] interface {
 	Vertices() []vertex.Vertex[V]
 	AddVertex(v vertex.Vertex[V])
 	AddEdge(e edge.Edge[E, V])
+	RemoveEdge(e edge.Edge[E, V])
 }
 
 var _ Graph[string, string] = (*dag[string, string])(nil)
@@ -28,6 +29,14 @@ func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
 	if _, ok := d.uniqueVerticies[v]; !ok {
 		d.uniqueVerticies[v] = struct{}{}
 		d.vertices = append(d.vertices, v)
+	}
+}
+
+func (d *dag[V, E]) RemoveEdge(e edge.Edge[E, V]) {
+	outgoing, ok := d.incomingToOutgoing[e.GetOrigin()]
+	if ok {
+		//origin vertex exists
+		delete(outgoing, e.GetDestination())
 	}
 }
 

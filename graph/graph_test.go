@@ -95,3 +95,40 @@ func TestAddSameOriginEdges(t *testing.T) {
 		t.Errorf("missing vertex %v in Verticies()", three)
 	}
 }
+
+func TestRemoveEdge(t *testing.T) {
+	g := New[int, string]()
+	one := vertex.New(1)
+	two := vertex.New(2)
+	e1 := edge.New("1-2", one, two)
+	g.AddEdge(e1)
+	if got := len(g.OutgoingEdges(one)); got != 1 {
+		t.Errorf("expected number of edges to be 1, got %v", got)
+	}
+
+	if got := g.OutgoingEdges(one); got[0] != e1 {
+		t.Errorf("unexpected edge, got %v", e1.Value())
+	}
+
+	if got := len(g.Vertices()); got != 2 {
+		t.Errorf("expected number of vertices to be 2, got %v", got)
+	}
+
+	if !slices.Contains(g.Vertices(), one) {
+		t.Errorf("missing vertex %v in Verticies()", one)
+	}
+
+	if !slices.Contains(g.Vertices(), two) {
+		t.Errorf("missing vertex %v in Verticies()", two)
+	}
+
+	g.RemoveEdge(e1)
+
+	if got := len(g.Vertices()); got != 2 {
+		t.Errorf("expected number of vertices to be 2, got %v", got)
+	}
+
+	if got := len(g.OutgoingEdges(one)); got != 0 {
+		t.Errorf("expected number of edges to be 1, got %v", got)
+	}
+}
