@@ -24,7 +24,11 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stac
 				foundUnexploredEdge = true
 				if err := s.Push(opposite); err != nil {
 					if _, ok := errors.AsType[*stack.DuplicateValuesError[vertex.Vertex[V]]](err); ok {
-						return nil, &CycleDetectedError[V, E]{EdgeValue: g.GetEdgeValue(top, opposite), Origin: top, Destination: opposite}
+						edgeValue, ok := g.GetEdgeValue(top, opposite)
+						if !ok {
+							panic(fmt.Sprintf("failed to get edge value between %v and %v", top, opposite))
+						}
+						return nil, &CycleDetectedError[V, E]{EdgeValue: edgeValue, Origin: top, Destination: opposite}
 					}
 					panic(fmt.Sprintf("unhandled error: %v", err))
 				}

@@ -11,7 +11,7 @@ type Graph[V any, E any] interface {
 	Vertices() []vertex.Vertex[V]
 	AddVertex(v vertex.Vertex[V])
 	AddEdge(value E, origin vertex.Vertex[V], destination vertex.Vertex[V])
-	GetEdgeValue(origin vertex.Vertex[V], destination vertex.Vertex[V]) E
+	GetEdgeValue(origin vertex.Vertex[V], destination vertex.Vertex[V]) (E, bool)
 	RemoveEdge(origin vertex.Vertex[V], destination vertex.Vertex[V])
 }
 
@@ -42,14 +42,14 @@ func (d *dag[V, E]) RemoveEdge(origin vertex.Vertex[V], destination vertex.Verte
 	}
 }
 
-func (d *dag[V, E]) GetEdgeValue(origin vertex.Vertex[V], destination vertex.Vertex[V]) E {
+func (d *dag[V, E]) GetEdgeValue(origin vertex.Vertex[V], destination vertex.Vertex[V]) (E, bool) {
 	outgoing, ok := d.incomingToOutgoing[origin]
 	if ok {
 		//origin vertex exists
-		return outgoing[destination]
+		return outgoing[destination], true
 	}
 	var zero E
-	return zero
+	return zero, false
 }
 
 func (d *dag[V, E]) AddEdge(value E, origin vertex.Vertex[V], destination vertex.Vertex[V]) {
