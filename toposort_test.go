@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/gtantech/toposort/graph"
-	"github.com/gtantech/toposort/graph/edge"
 	"github.com/gtantech/toposort/graph/vertex"
 	"github.com/gtantech/toposort/stack"
 )
@@ -54,7 +53,7 @@ func TestDfsTopoUnhandledStackDuplicateValuesError(t *testing.T) {
 	s := mockDfsTopoStack[string]{Stack: stack.New[vertex.Vertex[string]]()}
 	A := mockVertex[string]{value: "A"}
 	B := mockVertex[string]{value: "B"}
-	DAG.AddEdge(edge.New("AB", &A, &B))
+	DAG.AddEdge("AB", &A, &B)
 	dfsTopo(DAG, &A, &s)
 }
 
@@ -68,13 +67,13 @@ func TestSort(t *testing.T) {
 
 	DAG := graph.New[string, string]()
 
-	DAG.AddEdge(edge.New("AB", &A, &B))
-	DAG.AddEdge(edge.New("AC", &A, &C))
-	DAG.AddEdge(edge.New("BC", &B, &C))
-	DAG.AddEdge(edge.New("BD", &B, &D))
-	DAG.AddEdge(edge.New("CE", &C, &E))
-	DAG.AddEdge(edge.New("ED", &E, &D))
-	DAG.AddEdge(edge.New("EF", &E, &F))
+	DAG.AddEdge("AB", &A, &B)
+	DAG.AddEdge("AC", &A, &C)
+	DAG.AddEdge("BC", &B, &C)
+	DAG.AddEdge("BD", &B, &D)
+	DAG.AddEdge("CE", &C, &E)
+	DAG.AddEdge("ED", &E, &D)
+	DAG.AddEdge("EF", &E, &F)
 
 	order, err := TopologicalSort(DAG)
 	if err != nil {
@@ -107,14 +106,14 @@ func TestSortWithCycle(t *testing.T) {
 
 	DAG := graph.New[string, string]()
 
-	DAG.AddEdge(edge.New("AB", &A, &B))
-	DAG.AddEdge(edge.New("AC", &A, &C))
-	DAG.AddEdge(edge.New("BC", &B, &C))
-	DAG.AddEdge(edge.New("BD", &B, &D))
-	DAG.AddEdge(edge.New("CE", &C, &E))
-	DAG.AddEdge(edge.New("ED", &E, &D))
-	DAG.AddEdge(edge.New("EF", &E, &F))
-	DAG.AddEdge(edge.New("FA", &F, &A)) //add a return edge from F to A to add a cycle
+	DAG.AddEdge("AB", &A, &B)
+	DAG.AddEdge("AC", &A, &C)
+	DAG.AddEdge("BC", &B, &C)
+	DAG.AddEdge("BD", &B, &D)
+	DAG.AddEdge("CE", &C, &E)
+	DAG.AddEdge("ED", &E, &D)
+	DAG.AddEdge("EF", &E, &F)
+	DAG.AddEdge("FA", &F, &A) //add a return edge from F to A to add a cycle
 
 	_, err := TopologicalSort(DAG)
 	if err == nil {

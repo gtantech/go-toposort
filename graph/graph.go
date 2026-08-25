@@ -3,7 +3,6 @@ package graph
 import (
 	"maps"
 
-	"github.com/gtantech/toposort/graph/edge"
 	"github.com/gtantech/toposort/graph/vertex"
 )
 
@@ -11,8 +10,9 @@ type Graph[V any, E any] interface {
 	OutgoingVertices(vertex vertex.Vertex[V]) func(yield func(vertex.Vertex[V]) bool)
 	Vertices() []vertex.Vertex[V]
 	AddVertex(v vertex.Vertex[V])
-	AddEdge(e edge.Edge[E, V])
-	RemoveEdge(e edge.Edge[E, V])
+	AddEdge(value E, origin vertex.Vertex[V], destination vertex.Vertex[V])
+	GetEdgeValue(origin vertex.Vertex[V], destination vertex.Vertex[V]) E
+	RemoveEdge(origin vertex.Vertex[V], destination vertex.Vertex[V])
 }
 
 var _ Graph[string, string] = (*dag[string, string])(nil)
@@ -34,30 +34,40 @@ func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
 	}
 }
 
-func (d *dag[V, E]) RemoveEdge(e edge.Edge[E, V]) {
-	outgoing, ok := d.incomingToOutgoing[e.GetOrigin()]
+func (d *dag[V, E]) RemoveEdge(origin vertex.Vertex[V], destination vertex.Vertex[V]) {
+	outgoing, ok := d.incomingToOutgoing[origin]
 	if ok {
 		//origin vertex exists
-		delete(outgoing, e.GetDestination())
+		delete(outgoing, destination)
 	}
 }
 
-func (d *dag[V, E]) AddEdge(e edge.Edge[E, V]) {
-	outgoing, ok := d.incomingToOutgoing[e.GetOrigin()]
+func (d *dag[V, E]) GetEdgeValue(origin vertex.Vertex[V], destination vertex.Vertex[V]) E {
+	outgoing, ok := d.incomingToOutgoing[origin]
+	if ok {
+		//origin vertex exists
+		return outgoing[destination]
+	}
+	var zero E
+	return zero
+}
+
+func (d *dag[V, E]) AddEdge(value E, origin vertex.Vertex[V], destination vertex.Vertex[V]) {
+	outgoing, ok := d.incomingToOutgoing[origin]
 	if !ok {
 		outgoing := map[vertex.Vertex[V]]E{}
-		outgoing[e.GetDestination()] = e.Value()
-		d.incomingToOutgoing[e.GetOrigin()] = outgoing
+		outgoing[destination] = value
+		d.incomingToOutgoing[origin] = outgoing
 	} else {
-		outgoing[e.GetDestination()] = e.Value()
+		outgoing[destination] = value
 	}
-	if _, ok := d.uniqueVerticies[e.GetOrigin()]; !ok {
-		d.uniqueVerticies[e.GetOrigin()] = struct{}{}
-		d.vertices = append(d.vertices, e.GetOrigin())
+	if _, ok := d.uniqueVerticies[origin]; !ok {
+		d.uniqueVerticies[origin] = struct{}{}
+		d.vertices = append(d.vertices, origin)
 	}
-	if _, ok := d.uniqueVerticies[e.GetDestination()]; !ok {
-		d.uniqueVerticies[e.GetDestination()] = struct{}{}
-		d.vertices = append(d.vertices, e.GetDestination())
+	if _, ok := d.uniqueVerticies[destination]; !ok {
+		d.uniqueVerticies[destination] = struct{}{}
+		d.vertices = append(d.vertices, destination)
 	}
 }
 

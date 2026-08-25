@@ -5,7 +5,6 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/gtantech/toposort/graph/edge"
 	"github.com/gtantech/toposort/graph/vertex"
 )
 
@@ -36,14 +35,14 @@ func TestAddEdges(t *testing.T) {
 	g := New[int, string]()
 	one := vertex.New(1)
 	two := vertex.New(2)
-	e1 := edge.New("1-2", one, two)
-	g.AddEdge(e1)
+	value := "1-2"
+	g.AddEdge(value, one, two)
 	if got := len(slices.Collect(g.OutgoingVertices(one))); got != 1 {
 		t.Errorf("expected number of edges to be 1, got %v", got)
 	}
 
 	if got := slices.Collect(g.OutgoingVertices(one)); got[0] != two {
-		t.Errorf("unexpected edge, got %v", e1.Value())
+		t.Errorf("unexpected edge, got %v", value)
 	}
 
 	if got := len(g.Vertices()); got != 2 {
@@ -64,16 +63,16 @@ func TestAddSameOriginEdges(t *testing.T) {
 	one := vertex.New(1)
 	two := vertex.New(2)
 	three := vertex.New(3)
-	e1 := edge.New("1-2", one, two)
-	e2 := edge.New("1-3", one, three)
-	g.AddEdge(e1)
-	g.AddEdge(e2)
+	e1 := "1-2"
+	e2 := "1-3"
+	g.AddEdge(e1, one, two)
+	g.AddEdge(e2, one, three)
 	if got := len(slices.Collect(g.OutgoingVertices(one))); got != 2 {
 		t.Errorf("expected number of edges to be 2, got %v", got)
 	}
 
 	if got := slices.Collect(g.OutgoingVertices(one)); !(reflect.DeepEqual(got, []vertex.Vertex[int]{two, three}) || reflect.DeepEqual(got, []vertex.Vertex[int]{three, two})) {
-		t.Errorf("unexpected edge, want %v got %v", []edge.Edge[string, int]{e1, e2}, got)
+		t.Errorf("unexpected edge, want %v got %v", []vertex.Vertex[int]{two, three}, got)
 	}
 
 	if got := len(g.Vertices()); got != 3 {
@@ -97,14 +96,14 @@ func TestRemoveEdge(t *testing.T) {
 	g := New[int, string]()
 	one := vertex.New(1)
 	two := vertex.New(2)
-	e1 := edge.New("1-2", one, two)
-	g.AddEdge(e1)
+	e1 := "1-2"
+	g.AddEdge(e1, one, two)
 	if got := len(slices.Collect(g.OutgoingVertices(one))); got != 1 {
 		t.Errorf("expected number of edges to be 1, got %v", got)
 	}
 
 	if got := slices.Collect(g.OutgoingVertices(one)); got[0] != two {
-		t.Errorf("unexpected edge, got %v", e1.Value())
+		t.Errorf("unexpected edge, got %v", e1)
 	}
 
 	if got := len(g.Vertices()); got != 2 {
@@ -119,7 +118,7 @@ func TestRemoveEdge(t *testing.T) {
 		t.Errorf("missing vertex %v in Verticies()", two)
 	}
 
-	g.RemoveEdge(e1)
+	g.RemoveEdge(one, two)
 
 	if got := len(g.Vertices()); got != 2 {
 		t.Errorf("expected number of vertices to be 2, got %v", got)
