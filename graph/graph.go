@@ -19,12 +19,12 @@ var _ Graph[string, string] = (*dag[string, string])(nil)
 
 type dag[V any, E any] struct {
 	vertices           []vertex.Vertex[V]
-	incomingToOutgoing map[vertex.Vertex[V]]map[vertex.Vertex[V]]edge.Edge[E, V]
+	incomingToOutgoing map[vertex.Vertex[V]]map[vertex.Vertex[V]]E
 	uniqueVerticies    map[vertex.Vertex[V]]struct{}
 }
 
 func New[V any, E any]() Graph[V, E] {
-	return &dag[V, E]{vertices: []vertex.Vertex[V]{}, incomingToOutgoing: make(map[vertex.Vertex[V]]map[vertex.Vertex[V]]edge.Edge[E, V]), uniqueVerticies: make(map[vertex.Vertex[V]]struct{})}
+	return &dag[V, E]{vertices: []vertex.Vertex[V]{}, incomingToOutgoing: make(map[vertex.Vertex[V]]map[vertex.Vertex[V]]E), uniqueVerticies: make(map[vertex.Vertex[V]]struct{})}
 }
 
 func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
@@ -45,11 +45,11 @@ func (d *dag[V, E]) RemoveEdge(e edge.Edge[E, V]) {
 func (d *dag[V, E]) AddEdge(e edge.Edge[E, V]) {
 	outgoing, ok := d.incomingToOutgoing[e.GetOrigin()]
 	if !ok {
-		outgoing := map[vertex.Vertex[V]]edge.Edge[E, V]{}
-		outgoing[e.GetDestination()] = e
+		outgoing := map[vertex.Vertex[V]]E{}
+		outgoing[e.GetDestination()] = e.Value()
 		d.incomingToOutgoing[e.GetOrigin()] = outgoing
 	} else {
-		outgoing[e.GetDestination()] = e
+		outgoing[e.GetDestination()] = e.Value()
 	}
 	if _, ok := d.uniqueVerticies[e.GetOrigin()]; !ok {
 		d.uniqueVerticies[e.GetOrigin()] = struct{}{}
