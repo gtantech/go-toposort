@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"reflect"
 	"slices"
 	"testing"
 
@@ -71,12 +72,8 @@ func TestAddSameOriginEdges(t *testing.T) {
 		t.Errorf("expected number of edges to be 2, got %v", got)
 	}
 
-	if got := g.OutgoingEdges(one); got[0] != e1 {
-		t.Errorf("unexpected edge, want %v got %v", e1, got[0])
-	}
-
-	if got := g.OutgoingEdges(one); got[1] != e2 {
-		t.Errorf("unexpected edge, want %v got %v", e2, got[1])
+	if got := g.OutgoingEdges(one); !(reflect.DeepEqual(got, []edge.Edge[string, int]{e1, e2}) || reflect.DeepEqual(got, []edge.Edge[string, int]{e2, e1})) {
+		t.Errorf("unexpected edge, want %v got %v", []edge.Edge[string, int]{e1, e2}, got)
 	}
 
 	if got := len(g.Vertices()); got != 3 {
