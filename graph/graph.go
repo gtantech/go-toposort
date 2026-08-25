@@ -15,13 +15,13 @@ type Graph[V any, E any] interface {
 var _ Graph[string, string] = (*dag[string, string])(nil)
 
 type dag[V any, E any] struct {
-	vertices        []vertex.Vertex[V]
-	outgoingEdges   map[vertex.Vertex[V]][]edge.Edge[E, V]
-	uniqueVerticies map[vertex.Vertex[V]]struct{}
+	vertices           []vertex.Vertex[V]
+	incomingToOutgoing map[vertex.Vertex[V]]map[vertex.Vertex[V]]edge.Edge[E, V]
+	uniqueVerticies    map[vertex.Vertex[V]]struct{}
 }
 
 func New[V any, E any]() Graph[V, E] {
-	return &dag[V, E]{vertices: []vertex.Vertex[V]{}, outgoingEdges: make(map[vertex.Vertex[V]][]edge.Edge[E, V]), uniqueVerticies: make(map[vertex.Vertex[V]]struct{})}
+	return &dag[V, E]{vertices: []vertex.Vertex[V]{}, incomingToOutgoing: make(map[vertex.Vertex[V]]map[vertex.Vertex[V]]edge.Edge[E, V]), uniqueVerticies: make(map[vertex.Vertex[V]]struct{})}
 }
 
 func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
@@ -32,11 +32,13 @@ func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
 }
 
 func (d *dag[V, E]) AddEdge(e edge.Edge[E, V]) {
-	value, ok := d.outgoingEdges[e.GetOrigin()]
+	outgoing, ok := d.incomingToOutgoing[e.GetOrigin()]
 	if !ok {
-		d.outgoingEdges[e.GetOrigin()] = []edge.Edge[E, V]{e}
+		outgoing := map[vertex.Vertex[V]]edge.Edge[E, V]{}
+		outgoing[e.GetDestination()] = e
+		d.incomingToOutgoing[e.GetOrigin()] = outgoing
 	} else {
-		d.outgoingEdges[e.GetOrigin()] = append(value, e)
+		outgoing[e.GetDestination()] = e
 	}
 	if _, ok := d.uniqueVerticies[e.GetOrigin()]; !ok {
 		d.uniqueVerticies[e.GetOrigin()] = struct{}{}
@@ -49,8 +51,16 @@ func (d *dag[V, E]) AddEdge(e edge.Edge[E, V]) {
 }
 
 // OutgoingEdges implements [graph.Graph].
-func (d *dag[V, E]) OutgoingEdges(vertex vertex.Vertex[V]) []edge.Edge[E, V] {
-	return d.outgoingEdges[vertex]
+func (d *dag[V, E]) OutgoingEdges(v vertex.Vertex[V]) []edge.Edge[E, V] {
+	outgoingVertex := d.incomingToOutgoing[v]
+
+	result := make([]edge.Edge[E, V], 0, len(outgoingVertex))
+
+	for key := range outgoingVertex {
+		result = append(result, outgoingVertex[key])
+	}
+
+	return result //TODO change API to return iterator
 }
 
 // Vertices implements [graph.Graph].
