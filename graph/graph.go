@@ -1,12 +1,14 @@
 package graph
 
 import (
+	"maps"
+
 	"github.com/gtantech/toposort/graph/edge"
 	"github.com/gtantech/toposort/graph/vertex"
 )
 
 type Graph[V any, E any] interface {
-	OutgoingEdges(vertex vertex.Vertex[V]) []edge.Edge[E, V]
+	OutgoingVertices(vertex vertex.Vertex[V]) func(yield func(vertex.Vertex[V]) bool)
 	Vertices() []vertex.Vertex[V]
 	AddVertex(v vertex.Vertex[V])
 	AddEdge(e edge.Edge[E, V])
@@ -59,17 +61,11 @@ func (d *dag[V, E]) AddEdge(e edge.Edge[E, V]) {
 	}
 }
 
-// OutgoingEdges implements [graph.Graph].
-func (d *dag[V, E]) OutgoingEdges(v vertex.Vertex[V]) []edge.Edge[E, V] {
+// OutgoingVertices implements [graph.Graph].
+func (d *dag[V, E]) OutgoingVertices(v vertex.Vertex[V]) func(yield func(vertex.Vertex[V]) bool) {
 	outgoingVertex := d.incomingToOutgoing[v]
 
-	result := make([]edge.Edge[E, V], 0, len(outgoingVertex))
-
-	for key := range outgoingVertex {
-		result = append(result, outgoingVertex[key])
-	}
-
-	return result //TODO change API to return iterator
+	return maps.Keys(outgoingVertex)
 }
 
 // Vertices implements [graph.Graph].

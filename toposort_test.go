@@ -89,9 +89,9 @@ func TestSort(t *testing.T) {
 
 	for _, v := range order {
 		v.SetVisited()
-		for _, e := range DAG.OutgoingEdges(v) {
-			if e.GetDestination().IsVisited() {
-				t.Fatalf("%v was visited before the current vertex %v", e.GetDestination(), v)
+		for destination := range DAG.OutgoingVertices(v) {
+			if destination.IsVisited() {
+				t.Fatalf("%v was visited before the current vertex %v", destination, v)
 			}
 		}
 	}

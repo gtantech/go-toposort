@@ -38,11 +38,11 @@ func TestAddEdges(t *testing.T) {
 	two := vertex.New(2)
 	e1 := edge.New("1-2", one, two)
 	g.AddEdge(e1)
-	if got := len(g.OutgoingEdges(one)); got != 1 {
+	if got := len(slices.Collect(g.OutgoingVertices(one))); got != 1 {
 		t.Errorf("expected number of edges to be 1, got %v", got)
 	}
 
-	if got := g.OutgoingEdges(one); got[0] != e1 {
+	if got := slices.Collect(g.OutgoingVertices(one)); got[0] != two {
 		t.Errorf("unexpected edge, got %v", e1.Value())
 	}
 
@@ -68,11 +68,11 @@ func TestAddSameOriginEdges(t *testing.T) {
 	e2 := edge.New("1-3", one, three)
 	g.AddEdge(e1)
 	g.AddEdge(e2)
-	if got := len(g.OutgoingEdges(one)); got != 2 {
+	if got := len(slices.Collect(g.OutgoingVertices(one))); got != 2 {
 		t.Errorf("expected number of edges to be 2, got %v", got)
 	}
 
-	if got := g.OutgoingEdges(one); !(reflect.DeepEqual(got, []edge.Edge[string, int]{e1, e2}) || reflect.DeepEqual(got, []edge.Edge[string, int]{e2, e1})) {
+	if got := slices.Collect(g.OutgoingVertices(one)); !(reflect.DeepEqual(got, []vertex.Vertex[int]{two, three}) || reflect.DeepEqual(got, []vertex.Vertex[int]{three, two})) {
 		t.Errorf("unexpected edge, want %v got %v", []edge.Edge[string, int]{e1, e2}, got)
 	}
 
@@ -99,11 +99,11 @@ func TestRemoveEdge(t *testing.T) {
 	two := vertex.New(2)
 	e1 := edge.New("1-2", one, two)
 	g.AddEdge(e1)
-	if got := len(g.OutgoingEdges(one)); got != 1 {
+	if got := len(slices.Collect(g.OutgoingVertices(one))); got != 1 {
 		t.Errorf("expected number of edges to be 1, got %v", got)
 	}
 
-	if got := g.OutgoingEdges(one); got[0] != e1 {
+	if got := slices.Collect(g.OutgoingVertices(one)); got[0] != two {
 		t.Errorf("unexpected edge, got %v", e1.Value())
 	}
 
@@ -125,7 +125,7 @@ func TestRemoveEdge(t *testing.T) {
 		t.Errorf("expected number of vertices to be 2, got %v", got)
 	}
 
-	if got := len(g.OutgoingEdges(one)); got != 0 {
+	if got := len(slices.Collect(g.OutgoingVertices(one))); got != 0 {
 		t.Errorf("expected number of edges to be 1, got %v", got)
 	}
 }

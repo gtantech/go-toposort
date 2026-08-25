@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gtantech/toposort/graph"
+	"github.com/gtantech/toposort/graph/edge"
 	"github.com/gtantech/toposort/graph/vertex"
 	"github.com/gtantech/toposort/stack"
 )
@@ -14,19 +15,18 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stac
 	s.Push(v)
 	for !s.IsEmpty() {
 		top := s.Peek()
-		outgoingEdges := g.OutgoingEdges(top)
 		foundUnexploredEdge := false
-		for _, e := range outgoingEdges {
+		for opposite := range g.OutgoingVertices(top) {
 			if foundUnexploredEdge {
 				break
 			}
-			opposite := e.GetDestination()
 			if !opposite.IsVisited() {
 				//discovery edge
 				foundUnexploredEdge = true
 				if err := s.Push(opposite); err != nil {
 					if _, ok := errors.AsType[*stack.DuplicateValuesError[vertex.Vertex[V]]](err); ok {
-						return nil, &CycleDetectedError[V, E]{Edge: e}
+						var zero E
+						return nil, &CycleDetectedError[V, E]{Edge: edge.New(zero, top, opposite)} //TODO add proper edge value
 					}
 					panic(fmt.Sprintf("unhandled error: %v", err))
 				}
