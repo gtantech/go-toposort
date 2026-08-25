@@ -128,3 +128,50 @@ func TestRemoveEdge(t *testing.T) {
 		t.Errorf("expected number of edges to be 1, got %v", got)
 	}
 }
+
+func TestGetEdgeValue(t *testing.T) {
+	g := New[int, string]()
+	one := vertex.New(1)
+	two := vertex.New(2)
+	e1 := "1-2"
+	g.AddEdge(e1, one, two)
+
+	ev, ok := g.GetEdgeValue(one, two)
+
+	if !ok {
+		t.Errorf("expected edge value to be ok, got not ok")
+	}
+
+	if ev != e1 {
+		t.Errorf("unexpected value, got %v want %v", ev, e1)
+	}
+}
+
+func TestGetEdgeValueNoValueFound(t *testing.T) {
+	g := New[int, string]()
+	one := vertex.New(1)
+	two := vertex.New(2)
+	three := vertex.New(3)
+	e1 := "1-2"
+	g.AddEdge(e1, one, two)
+
+	ev, ok := g.GetEdgeValue(one, three)
+
+	if ok {
+		t.Errorf("expected edge value to be not ok, got ok")
+	}
+
+	if ev != "" {
+		t.Errorf("unexpected value, got %v want %v", ev, "")
+	}
+
+	ev, ok = g.GetEdgeValue(two, three)
+
+	if ok {
+		t.Errorf("expected edge value to be not ok, got ok")
+	}
+
+	if ev != "" {
+		t.Errorf("unexpected value, got %v want %v", ev, "")
+	}
+}
