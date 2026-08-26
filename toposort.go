@@ -50,7 +50,7 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stac
 
 func TopologicalSort[V any, E any](g graph.Graph[V, E]) ([]vertex.Vertex[V], error) {
 	order := []vertex.Vertex[V]{}
-	for _, v := range g.Vertices() {
+	for v := range g.Vertices() {
 		if !v.IsVisited() {
 			suborder, err := dfsTopo(g, v, stack.New[vertex.Vertex[V]]())
 			if err != nil {
