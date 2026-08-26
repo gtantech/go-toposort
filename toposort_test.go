@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/gtantech/toposort/graph"
-	"github.com/gtantech/toposort/graph/edge"
 	"github.com/gtantech/toposort/graph/vertex"
 	"github.com/gtantech/toposort/stack"
 )
@@ -43,6 +42,15 @@ func (s *mockDfsTopoStack[T]) Push(v vertex.Vertex[T]) error {
 	return fmt.Errorf("sent error to panic")
 }
 
+type mockGraph[V any, E any] struct {
+	graph.Graph[V, E]
+}
+
+func (g *mockGraph[V, E]) GetEdgeValue(origin vertex.Vertex[V], destination vertex.Vertex[V]) (E, bool) {
+	var zero E
+	return zero, false
+}
+
 func TestDfsTopoUnhandledStackDuplicateValuesError(t *testing.T) {
 	defer func() {
 		if r := recover(); r == nil {
@@ -54,8 +62,25 @@ func TestDfsTopoUnhandledStackDuplicateValuesError(t *testing.T) {
 	s := mockDfsTopoStack[string]{Stack: stack.New[vertex.Vertex[string]]()}
 	A := mockVertex[string]{value: "A"}
 	B := mockVertex[string]{value: "B"}
-	DAG.AddEdge(edge.New("AB", &A, &B))
+	DAG.AddEdge("AB", &A, &B)
 	dfsTopo(DAG, &A, &s)
+}
+
+func TestDfsFailedToGetEdgeValue(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("failed to get edge did not panic")
+		}
+	}()
+	DAG := mockGraph[string, string]{Graph: graph.New[string, string]()}
+	s := stack.New[vertex.Vertex[string]]()
+
+	A := mockVertex[string]{value: "A"}
+	B := mockVertex[string]{value: "B"}
+
+	DAG.AddEdge("AB", &A, &B)
+	DAG.AddEdge("BA", &B, &A)
+	dfsTopo(&DAG, &A, s)
 }
 
 func TestSort(t *testing.T) {
@@ -68,13 +93,13 @@ func TestSort(t *testing.T) {
 
 	DAG := graph.New[string, string]()
 
-	DAG.AddEdge(edge.New("AB", &A, &B))
-	DAG.AddEdge(edge.New("AC", &A, &C))
-	DAG.AddEdge(edge.New("BC", &B, &C))
-	DAG.AddEdge(edge.New("BD", &B, &D))
-	DAG.AddEdge(edge.New("CE", &C, &E))
-	DAG.AddEdge(edge.New("ED", &E, &D))
-	DAG.AddEdge(edge.New("EF", &E, &F))
+	DAG.AddEdge("AB", &A, &B)
+	DAG.AddEdge("AC", &A, &C)
+	DAG.AddEdge("BC", &B, &C)
+	DAG.AddEdge("BD", &B, &D)
+	DAG.AddEdge("CE", &C, &E)
+	DAG.AddEdge("ED", &E, &D)
+	DAG.AddEdge("EF", &E, &F)
 
 	order, err := TopologicalSort(DAG)
 	if err != nil {
@@ -89,9 +114,9 @@ func TestSort(t *testing.T) {
 
 	for _, v := range order {
 		v.SetVisited()
-		for _, e := range DAG.OutgoingEdges(v) {
-			if e.GetDestination().IsVisited() {
-				t.Fatalf("%v was visited before the current vertex %v", e.GetDestination(), v)
+		for destination := range DAG.OutgoingVertices(v) {
+			if destination.IsVisited() {
+				t.Fatalf("%v was visited before the current vertex %v", destination, v)
 			}
 		}
 	}
@@ -107,14 +132,14 @@ func TestSortWithCycle(t *testing.T) {
 
 	DAG := graph.New[string, string]()
 
-	DAG.AddEdge(edge.New("AB", &A, &B))
-	DAG.AddEdge(edge.New("AC", &A, &C))
-	DAG.AddEdge(edge.New("BC", &B, &C))
-	DAG.AddEdge(edge.New("BD", &B, &D))
-	DAG.AddEdge(edge.New("CE", &C, &E))
-	DAG.AddEdge(edge.New("ED", &E, &D))
-	DAG.AddEdge(edge.New("EF", &E, &F))
-	DAG.AddEdge(edge.New("FA", &F, &A)) //add a return edge from F to A to add a cycle
+	DAG.AddEdge("AB", &A, &B)
+	DAG.AddEdge("AC", &A, &C)
+	DAG.AddEdge("BC", &B, &C)
+	DAG.AddEdge("BD", &B, &D)
+	DAG.AddEdge("CE", &C, &E)
+	DAG.AddEdge("ED", &E, &D)
+	DAG.AddEdge("EF", &E, &F)
+	DAG.AddEdge("FA", &F, &A) //add a return edge from F to A to add a cycle
 
 	_, err := TopologicalSort(DAG)
 	if err == nil {

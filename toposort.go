@@ -14,23 +14,29 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stac
 	s.Push(v)
 	for !s.IsEmpty() {
 		top := s.Peek()
-		outgoingEdges := g.OutgoingEdges(top)
 		foundUnexploredEdge := false
-		for _, e := range outgoingEdges {
+		for opposite := range g.OutgoingVertices(top) {
 			if foundUnexploredEdge {
 				break
 			}
-			opposite := e.GetDestination()
-			if !opposite.IsVisited() {
-				//discovery edge
-				foundUnexploredEdge = true
-				if err := s.Push(opposite); err != nil {
-					if _, ok := errors.AsType[*stack.DuplicateValuesError[vertex.Vertex[V]]](err); ok {
-						return nil, &CycleDetectedError[V, E]{Edge: e}
-					}
-					panic(fmt.Sprintf("unhandled error: %v", err))
-				}
+			if opposite.IsVisited() {
+				continue
 			}
+			//discovery edge
+			foundUnexploredEdge = true
+			pushErr := s.Push(opposite)
+			if pushErr == nil {
+				continue
+			}
+			//check error type
+			if _, ok := errors.AsType[*stack.DuplicateValuesError[vertex.Vertex[V]]](pushErr); ok {
+				edgeValue, ok := g.GetEdgeValue(top, opposite)
+				if !ok {
+					panic(fmt.Sprintf("failed to get edge value between %v and %v", top, opposite))
+				}
+				return nil, &CycleDetectedError[V, E]{EdgeValue: edgeValue, Origin: top, Destination: opposite}
+			}
+			panic(fmt.Sprintf("unhandled error for stack push: %v", pushErr))
 		}
 		if !foundUnexploredEdge {
 			//all edges explored
