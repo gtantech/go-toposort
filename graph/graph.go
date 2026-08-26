@@ -18,12 +18,12 @@ type Graph[V any, E any] interface {
 var _ Graph[string, string] = (*dag[string, string])(nil)
 
 type dag[V any, E any] struct {
-	incomingToOutgoing map[vertex.Vertex[V]]map[vertex.Vertex[V]]E
-	uniqueVerticies    map[vertex.Vertex[V]]struct{}
+	edgeValues      map[vertex.Vertex[V]]map[vertex.Vertex[V]]E
+	uniqueVerticies map[vertex.Vertex[V]]struct{}
 }
 
 func New[V any, E any]() Graph[V, E] {
-	return &dag[V, E]{incomingToOutgoing: make(map[vertex.Vertex[V]]map[vertex.Vertex[V]]E), uniqueVerticies: make(map[vertex.Vertex[V]]struct{})}
+	return &dag[V, E]{edgeValues: make(map[vertex.Vertex[V]]map[vertex.Vertex[V]]E), uniqueVerticies: make(map[vertex.Vertex[V]]struct{})}
 }
 
 func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
@@ -33,7 +33,7 @@ func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
 }
 
 func (d *dag[V, E]) RemoveEdge(origin vertex.Vertex[V], destination vertex.Vertex[V]) {
-	outgoing, ok := d.incomingToOutgoing[origin]
+	outgoing, ok := d.edgeValues[origin]
 	if ok {
 		//origin vertex exists
 		delete(outgoing, destination)
@@ -41,14 +41,14 @@ func (d *dag[V, E]) RemoveEdge(origin vertex.Vertex[V], destination vertex.Verte
 }
 
 func (d *dag[V, E]) GetEdgeValue(origin vertex.Vertex[V], destination vertex.Vertex[V]) (E, bool) {
-	outgoing, ok := d.incomingToOutgoing[origin]
+	destinations, ok := d.edgeValues[origin]
 	var zero E
 	if !ok {
 		return zero, false
 	}
 
 	//origin vertex exists
-	value, ok := outgoing[destination]
+	value, ok := destinations[destination]
 
 	if !ok {
 		return zero, false
@@ -57,13 +57,13 @@ func (d *dag[V, E]) GetEdgeValue(origin vertex.Vertex[V], destination vertex.Ver
 }
 
 func (d *dag[V, E]) AddEdge(value E, origin vertex.Vertex[V], destination vertex.Vertex[V]) {
-	outgoing, ok := d.incomingToOutgoing[origin]
+	destinations, ok := d.edgeValues[origin]
 	if !ok {
 		outgoing := map[vertex.Vertex[V]]E{}
 		outgoing[destination] = value
-		d.incomingToOutgoing[origin] = outgoing
+		d.edgeValues[origin] = outgoing
 	} else {
-		outgoing[destination] = value
+		destinations[destination] = value
 	}
 	if _, ok := d.uniqueVerticies[origin]; !ok {
 		d.uniqueVerticies[origin] = struct{}{}
@@ -75,9 +75,9 @@ func (d *dag[V, E]) AddEdge(value E, origin vertex.Vertex[V], destination vertex
 
 // OutgoingVertices implements [graph.Graph].
 func (d *dag[V, E]) OutgoingVertices(v vertex.Vertex[V]) func(yield func(vertex.Vertex[V]) bool) {
-	outgoingVertex := d.incomingToOutgoing[v]
+	destinations := d.edgeValues[v]
 
-	return maps.Keys(outgoingVertex)
+	return maps.Keys(destinations)
 }
 
 // Vertices implements [graph.Graph].
