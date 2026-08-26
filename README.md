@@ -18,7 +18,7 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Topological_sorting), topological
 Topological sorting can help order dependencies such as in task scheduling/project management or course scheduling where a prerequisite course must be taken before taking advanced courses.
 
 ## Install
-Install via `go get`. Note that Go 1.18 or newer is required.
+Install via `go get`. Note that Go 1.23 or newer is required.
 
 ```sh
 # After: go mod init ...
