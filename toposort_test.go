@@ -42,6 +42,15 @@ func (s *mockDfsTopoStack[T]) Push(v vertex.Vertex[T]) error {
 	return fmt.Errorf("sent error to panic")
 }
 
+type mockGraph[V any, E any] struct {
+	graph.Graph[V, E]
+}
+
+func (g *mockGraph[V, E]) GetEdgeValue(origin vertex.Vertex[V], destination vertex.Vertex[V]) (E, bool) {
+	var zero E
+	return zero, false
+}
+
 func TestDfsTopoUnhandledStackDuplicateValuesError(t *testing.T) {
 	defer func() {
 		if r := recover(); r == nil {
@@ -55,6 +64,23 @@ func TestDfsTopoUnhandledStackDuplicateValuesError(t *testing.T) {
 	B := mockVertex[string]{value: "B"}
 	DAG.AddEdge("AB", &A, &B)
 	dfsTopo(DAG, &A, &s)
+}
+
+func TestDfsFailedToGetEdgeValue(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("failed to get edge did not panic")
+		}
+	}()
+	DAG := mockGraph[string, string]{Graph: graph.New[string, string]()}
+	s := stack.New[vertex.Vertex[string]]()
+
+	A := mockVertex[string]{value: "A"}
+	B := mockVertex[string]{value: "B"}
+
+	DAG.AddEdge("AB", &A, &B)
+	DAG.AddEdge("BA", &B, &A)
+	dfsTopo(&DAG, &A, s)
 }
 
 func TestSort(t *testing.T) {
