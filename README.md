@@ -35,7 +35,6 @@ import (
 
 	"github.com/gtantech/toposort"
 	"github.com/gtantech/toposort/graph"
-	"github.com/gtantech/toposort/graph/edge"
 	"github.com/gtantech/toposort/graph/vertex"
 )
 
@@ -49,18 +48,16 @@ func main() {
 
 	//link vertices via edges
 	/*
-	   |A|   |B|
-	      \ /
-	       |
-		   v
-	      |C|
+		   |A|   |B|
+		      \ /
+		       |
+			   v
+		      |C|
 	*/
-	AC := edge.New(0, A, C)
-	BC := edge.New(0, B, C)
 
 	//add edges to graph
-	g.AddEdge(AC)
-	g.AddEdge(BC)
+	g.AddEdge(0, A, C)
+	g.AddEdge(1, B, C)
 
 	//get topological sorted order
 	order, _ := toposort.TopologicalSort(g)
@@ -87,9 +84,9 @@ order, err := toposort.TopologicalSort(g)
 if err != nil {
 	if err, ok := errors.AsType[*toposort.CycleDetectedError[string, int]](err); ok {
 		fmt.Printf("error: encountered cycle within graph at edge %v from %v to %v",
-			err.Edge.Value(),
-			err.Edge.GetOrigin().Value(),
-			err.Edge.GetDestination().Value(),
+			err.EdgeValue,
+			err.Origin,
+			err.Destination,
 		)
 	}
 }
