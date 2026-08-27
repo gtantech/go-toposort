@@ -72,9 +72,15 @@ func main() {
 
 ## User Defined Structs
 
-The `TopologicalSort` function accepts any structs that implement the interfaces defined in the graph package (graph, edge, vertex).
+The `TopologicalSort` function accepts any structs that implement the interfaces defined in the graph package. An example can be found in [examples/project-planning](./examples/project-planning/). 
+
+Use the following to run the example from the top most level directory:
+```bash
+go run ./examples/project-planning
+```
 
 ## Error Handling
+### CycleDetectedError
 `TopologicalSort` features cycle detection and will return a `CycleDetectedError` when encountering a cycle within the DAG. Below is an error handling example, extending from the above example:
 
 ```go
