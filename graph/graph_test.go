@@ -175,3 +175,35 @@ func TestGetEdgeValueNoValueFound(t *testing.T) {
 		t.Errorf("unexpected value, got %v want %v", ev, "")
 	}
 }
+
+func TestRemoveVertex(t *testing.T) {
+	g := New[int, string]()
+	one := vertex.New(1)
+	two := vertex.New(2)
+	e1 := "1-2"
+	g.AddEdge(e1, one, two)
+
+	g.RemoveVertex(one)
+	if _, ok := g.GetEdgeValue(one, two); ok {
+		t.Errorf("expected edge to be removed")
+	}
+
+	for v := range g.Vertices() {
+		if v == one {
+			t.Errorf("expected vertex %v to be removed", v)
+		}
+	}
+
+	g.AddEdge(e1, one, two)
+
+	g.RemoveVertex(two)
+	if _, ok := g.GetEdgeValue(one, two); ok {
+		t.Errorf("expected edge to be removed")
+	}
+
+	for v := range g.Vertices() {
+		if v == two {
+			t.Errorf("expected vertex %v to be removed", v)
+		}
+	}
+}
