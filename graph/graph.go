@@ -10,6 +10,7 @@ type Graph[V any, E any] interface {
 	OutgoingVertices(vertex vertex.Vertex[V]) func(yield func(vertex.Vertex[V]) bool)
 	Vertices() func(yield func(vertex.Vertex[V]) bool)
 	AddVertex(v vertex.Vertex[V])
+	RemoveVertex(v vertex.Vertex[V])
 	AddEdge(value E, origin vertex.Vertex[V], destination vertex.Vertex[V])
 	GetEdgeValue(origin vertex.Vertex[V], destination vertex.Vertex[V]) (E, bool)
 	RemoveEdge(origin vertex.Vertex[V], destination vertex.Vertex[V])
@@ -31,6 +32,20 @@ func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
 	if _, ok := d.uniqueVerticies[v]; !ok {
 		d.uniqueVerticies[v] = struct{}{}
 	}
+}
+
+func (d *dag[V, E]) RemoveVertex(v vertex.Vertex[V]) {
+	delete(d.uniqueVerticies, v)
+	//ensure that if this vertex v is an origin vertex, any edge relating to it is deleted
+	for affectedDestionationVertex := range d.outgoingVertices[v] {
+		delete(d.incomingVerticies[affectedDestionationVertex], v)
+	}
+	//ensure that if this vertex v is an destination vertex, any edge relating to it is deleted
+	for affectedOriginVertex := range d.incomingVerticies[v] {
+		delete(d.outgoingVertices[affectedOriginVertex], v)
+	}
+	delete(d.incomingVerticies, v)
+	delete(d.outgoingVertices, v)
 }
 
 func (d *dag[V, E]) RemoveEdge(origin vertex.Vertex[V], destination vertex.Vertex[V]) {
