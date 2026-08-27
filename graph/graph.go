@@ -57,20 +57,12 @@ func (d *dag[V, E]) GetEdgeValue(origin vertex.Vertex[V], destination vertex.Ver
 }
 
 func (d *dag[V, E]) AddEdge(value E, origin vertex.Vertex[V], destination vertex.Vertex[V]) {
-	destinations, ok := d.edgeValues[origin]
-	if !ok {
-		outgoing := map[vertex.Vertex[V]]E{}
-		outgoing[destination] = value
-		d.edgeValues[origin] = outgoing
-	} else {
-		destinations[destination] = value
+	if _, ok := d.edgeValues[origin]; !ok {
+		d.edgeValues[origin] = make(map[vertex.Vertex[V]]E)
 	}
-	if _, ok := d.uniqueVerticies[origin]; !ok {
-		d.uniqueVerticies[origin] = struct{}{}
-	}
-	if _, ok := d.uniqueVerticies[destination]; !ok {
-		d.uniqueVerticies[destination] = struct{}{}
-	}
+	d.edgeValues[origin][destination] = value
+	d.uniqueVerticies[origin] = struct{}{}
+	d.uniqueVerticies[destination] = struct{}{}
 }
 
 // OutgoingVertices implements [graph.Graph].
