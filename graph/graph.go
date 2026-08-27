@@ -18,12 +18,13 @@ type Graph[V any, E any] interface {
 var _ Graph[string, string] = (*dag[string, string])(nil)
 
 type dag[V any, E any] struct {
-	edgeValues      map[vertex.Vertex[V]]map[vertex.Vertex[V]]E
-	uniqueVerticies map[vertex.Vertex[V]]struct{}
+	edgeValues        map[vertex.Vertex[V]]map[vertex.Vertex[V]]E
+	incomingVerticies map[vertex.Vertex[V]]map[vertex.Vertex[V]]E //maps the destination vertex to a slice of incoming origin verticies
+	uniqueVerticies   map[vertex.Vertex[V]]struct{}
 }
 
 func New[V any, E any]() Graph[V, E] {
-	return &dag[V, E]{edgeValues: make(map[vertex.Vertex[V]]map[vertex.Vertex[V]]E), uniqueVerticies: make(map[vertex.Vertex[V]]struct{})}
+	return &dag[V, E]{edgeValues: make(map[vertex.Vertex[V]]map[vertex.Vertex[V]]E), incomingVerticies: make(map[vertex.Vertex[V]]map[vertex.Vertex[V]]E), uniqueVerticies: make(map[vertex.Vertex[V]]struct{})}
 }
 
 func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
@@ -61,6 +62,10 @@ func (d *dag[V, E]) AddEdge(value E, origin vertex.Vertex[V], destination vertex
 		d.edgeValues[origin] = make(map[vertex.Vertex[V]]E)
 	}
 	d.edgeValues[origin][destination] = value
+	if _, ok := d.incomingVerticies[destination]; !ok {
+		d.incomingVerticies[destination] = make(map[vertex.Vertex[V]]E)
+	}
+	d.incomingVerticies[destination][origin] = value
 	d.uniqueVerticies[origin] = struct{}{}
 	d.uniqueVerticies[destination] = struct{}{}
 }
