@@ -58,6 +58,22 @@ func TestAddEdges(t *testing.T) {
 	}
 }
 
+func TestIncomingVertices(t *testing.T) {
+	g := New[int, string]()
+	one := vertex.New(1)
+	two := vertex.New(2)
+	three := vertex.New(3)
+	g.AddEdge("1-2", one, two)
+	g.AddEdge("3-2", three, two)
+	if got := len(slices.Collect(g.IncomingVertices(two))); got != 2 {
+		t.Errorf("expected number of edges to be 2, got %v", got)
+	}
+
+	if got := slices.Collect(g.IncomingVertices(two)); !(slices.Contains(got, one) && slices.Contains(got, three) && !slices.Contains(got, two) && len(got) == 2) {
+		t.Errorf("unexpected edge, got %v", got)
+	}
+}
+
 func TestAddSameOriginEdges(t *testing.T) {
 	g := New[int, string]()
 	one := vertex.New(1)

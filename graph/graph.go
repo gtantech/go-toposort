@@ -8,6 +8,7 @@ import (
 
 type Graph[V any, E any] interface {
 	OutgoingVertices(vertex vertex.Vertex[V]) func(yield func(vertex.Vertex[V]) bool)
+	IncomingVertices(vertex vertex.Vertex[V]) func(yield func(vertex.Vertex[V]) bool)
 	Vertices() func(yield func(vertex.Vertex[V]) bool)
 	AddVertex(v vertex.Vertex[V])
 	RemoveVertex(v vertex.Vertex[V])
@@ -90,6 +91,13 @@ func (d *dag[V, E]) OutgoingVertices(v vertex.Vertex[V]) func(yield func(vertex.
 	destinations := d.outgoingVertices[v]
 
 	return maps.Keys(destinations)
+}
+
+// IncomingVertices implements [graph.Graph].
+func (d *dag[V, E]) IncomingVertices(v vertex.Vertex[V]) func(yield func(vertex.Vertex[V]) bool) {
+	origins := d.incomingVerticies[v]
+
+	return maps.Keys(origins)
 }
 
 // Vertices implements [graph.Graph].
