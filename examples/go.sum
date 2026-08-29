@@ -1,0 +1,4 @@
+github.com/gtantech/go-container v0.0.0-20260816164226-6b9b5a62baf3 h1:Q9OhzTjr6WoyfmrMWwgQ86ncm7ydJQ/FPx0whi9N4Eg=
+github.com/gtantech/go-container v0.0.0-20260816164226-6b9b5a62baf3/go.mod h1:6y3c65EkQG1pkhUurgYOAf5LIBIKbHEjh7b5+Rr0qEw=
+github.com/gtantech/toposort v0.0.0-20260828025235-e365a462efb7 h1:ufuVJK8EUwUQ87eH8jAiVbY6V17t0HoC1LA148eA3io=
+github.com/gtantech/toposort v0.0.0-20260828025235-e365a462efb7/go.mod h1:DBijZede9cDhFwk2sa6W7nqJ/LgOyDzk2rHV6luKIhc=
