@@ -29,7 +29,8 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stac
 				continue
 			}
 			//check error type
-			if _, ok := errors.AsType[*stack.DuplicateValuesError[vertex.Vertex[V]]](pushErr); ok {
+			var e *stack.DuplicateValuesError[vertex.Vertex[V]]
+			if errors.As(pushErr, &e) {
 				edgeValue, ok := g.GetEdgeValue(top, opposite)
 				if !ok {
 					panic(fmt.Sprintf("failed to get edge value between %v and %v", top, opposite))

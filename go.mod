@@ -1,5 +1,5 @@
 module github.com/gtantech/toposort
 
-go 1.26.5
+go 1.23
 
-require github.com/gtantech/go-container v0.0.0-20260816164226-6b9b5a62baf3
+require github.com/gtantech/go-container v0.0.0-20260829150403-4ee5db564b43
