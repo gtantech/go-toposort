@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/gtantech/toposort/graph"
-	"github.com/gtantech/toposort/stack"
+	"github.com/gtantech/toposort/v2/graph"
+	"github.com/gtantech/toposort/v2/stack"
 )
 
 func dfsTopo[V comparable, E any](g graph.Graph[V, E], v V, s stack.Stack[V], isVisited map[V]bool) ([]V, error) {

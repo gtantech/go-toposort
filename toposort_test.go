@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gtantech/toposort/graph"
-	"github.com/gtantech/toposort/stack"
+	"github.com/gtantech/toposort/v2/graph"
+	"github.com/gtantech/toposort/v2/stack"
 )
 
 type mockDfsTopoStack[T comparable] struct {

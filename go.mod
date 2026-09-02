@@ -1,4 +1,4 @@
-module github.com/gtantech/toposort
+module github.com/gtantech/toposort/v2
 
 go 1.23
 
