@@ -10,22 +10,11 @@ import (
 )
 
 type mockVertex[V any] struct {
-	value     V
-	isVisited bool
+	value V
 }
 
 func (v *mockVertex[V]) String() string {
 	return fmt.Sprintf("%v", v.value)
-}
-
-// IsVisited implements [graph.Vertex].
-func (v *mockVertex[V]) IsVisited() bool {
-	return v.isVisited
-}
-
-// SetVisited implements [graph.Vertex].
-func (v *mockVertex[V]) SetVisited() {
-	v.isVisited = true
 }
 
 // Value implements [graph.Vertex].
@@ -63,7 +52,8 @@ func TestDfsTopoUnhandledStackDuplicateValuesError(t *testing.T) {
 	A := mockVertex[string]{value: "A"}
 	B := mockVertex[string]{value: "B"}
 	DAG.AddEdge("AB", &A, &B)
-	dfsTopo(DAG, &A, &s)
+	isVisited := make(map[vertex.Vertex[string]]bool)
+	dfsTopo(DAG, &A, &s, isVisited)
 }
 
 func TestDfsFailedToGetEdgeValue(t *testing.T) {
@@ -80,7 +70,8 @@ func TestDfsFailedToGetEdgeValue(t *testing.T) {
 
 	DAG.AddEdge("AB", &A, &B)
 	DAG.AddEdge("BA", &B, &A)
-	dfsTopo(&DAG, &A, s)
+	isVisited := make(map[vertex.Vertex[string]]bool)
+	dfsTopo(&DAG, &A, s, isVisited)
 }
 
 func TestSort(t *testing.T) {
@@ -105,17 +96,15 @@ func TestSort(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error occurred. Error: %v", err)
 	}
-	A.isVisited = false
-	B.isVisited = false
-	C.isVisited = false
-	D.isVisited = false
-	E.isVisited = false
-	F.isVisited = false
+	isVisited := make(map[vertex.Vertex[string]]bool)
+	for v := range DAG.Vertices() {
+		isVisited[v] = false
+	}
 
 	for _, v := range order {
-		v.SetVisited()
+		isVisited[v] = true
 		for destination := range DAG.OutgoingVertices(v) {
-			if destination.IsVisited() {
+			if isVisited[destination] {
 				t.Fatalf("%v was visited before the current vertex %v", destination, v)
 			}
 		}

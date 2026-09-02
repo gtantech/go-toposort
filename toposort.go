@@ -9,7 +9,7 @@ import (
 	"github.com/gtantech/toposort/stack"
 )
 
-func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stack[vertex.Vertex[V]]) ([]vertex.Vertex[V], error) {
+func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stack[vertex.Vertex[V]], isVisited map[vertex.Vertex[V]]bool) ([]vertex.Vertex[V], error) {
 	order := []vertex.Vertex[V]{}
 	s.Push(v)
 	for !s.IsEmpty() {
@@ -19,7 +19,7 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stac
 			if foundUnexploredEdge {
 				break
 			}
-			if opposite.IsVisited() {
+			if isVisited[opposite] {
 				continue
 			}
 			//discovery edge
@@ -43,7 +43,7 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stac
 			//all edges explored
 			order = append([]vertex.Vertex[V]{top}, order...)
 			visited := s.Pop()
-			visited.SetVisited()
+			isVisited[visited] = true
 		}
 	}
 	return order, nil
@@ -51,9 +51,13 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stac
 
 func TopologicalSort[V any, E any](g graph.Graph[V, E]) ([]vertex.Vertex[V], error) {
 	order := []vertex.Vertex[V]{}
+	isVisited := make(map[vertex.Vertex[V]]bool)
 	for v := range g.Vertices() {
-		if !v.IsVisited() {
-			suborder, err := dfsTopo(g, v, stack.New[vertex.Vertex[V]]())
+		isVisited[v] = false
+	}
+	for v := range g.Vertices() {
+		if !isVisited[v] {
+			suborder, err := dfsTopo(g, v, stack.New[vertex.Vertex[V]](), isVisited)
 			if err != nil {
 				return nil, err
 			}
