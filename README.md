@@ -7,7 +7,6 @@ Toposort is a Go package that provides a generic implementation to topological s
 - [Why is Topological Sorting Useful](#why-is-topological-sorting-useful)
 - [Install](#install)
 - [Example](#example)
-- [User Defined Structs](#user-defined-structs)
 - [Error Handling](#error-handling)
 - [License](#license)
 
@@ -33,18 +32,17 @@ package main
 import (
 	"fmt"
 
-	"github.com/gtantech/toposort"
-	"github.com/gtantech/toposort/graph"
-	"github.com/gtantech/toposort/graph/vertex"
+	"github.com/gtantech/toposort/v2"
+	"github.com/gtantech/toposort/v2/graph"
 )
 
 func main() {
 	g := graph.New[string, int]()
 
 	//Creating vertices for graph
-	A := vertex.New("A")
-	B := vertex.New("B")
-	C := vertex.New("C")
+	A := "A"
+	B := "B"
+	C := "C"
 
 	//link vertices via edges
 	/*
@@ -64,19 +62,10 @@ func main() {
 
 	//print order
 	for _, v := range order {
-		fmt.Printf("|%v|,", v.Value())
+		fmt.Printf("|%v|,", v)
 	}
 }
 
-```
-
-## User Defined Structs
-
-The `TopologicalSort` function accepts any structs that implement the interfaces defined in the graph package. An example can be found in [examples/project-planning](./examples/project-planning/). 
-
-Use the following to run the example from the top most level directory:
-```bash
-go run ./examples/project-planning
 ```
 
 ## Error Handling
