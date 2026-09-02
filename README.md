@@ -21,7 +21,7 @@ Install via `go get`. Note that Go 1.23 or newer is required.
 
 ```sh
 # After: go mod init ...
-go get -u github.com/gtantech/toposort
+go get -u github.com/gtantech/toposort/v2
 ```
 
 ## Example
