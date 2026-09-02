@@ -3,20 +3,17 @@ package main
 import (
 	"fmt"
 
-	"github.com/gtantech/toposort"
-	"github.com/gtantech/toposort/graph"
-	"github.com/gtantech/toposort/graph/vertex"
+	"github.com/gtantech/toposort/v2"
+	"github.com/gtantech/toposort/v2/graph"
 )
 
 type Actvity struct {
-	vertex.Vertex[*Actvity]
 	Name     string
 	Duration int
 }
 
 func NewActivity(name string, durationMinutes int) *Actvity {
 	n := Actvity{Name: name, Duration: durationMinutes}
-	n.Vertex = vertex.New(&n)
 	return &n
 }
 
@@ -59,9 +56,9 @@ func main() {
 	fmt.Printf("%v:\n", p.Name)
 	for i, v := range order {
 		if i < len(order)-1 {
-			fmt.Printf("|%v|,", v.Value().Name)
+			fmt.Printf("|%v|,", v.Name)
 		} else {
-			fmt.Printf("|%v|", v.Value().Name)
+			fmt.Printf("|%v|", v.Name)
 		}
 	}
 }

@@ -3,18 +3,17 @@ package main
 import (
 	"fmt"
 
-	"github.com/gtantech/toposort"
-	"github.com/gtantech/toposort/graph"
-	"github.com/gtantech/toposort/graph/vertex"
+	"github.com/gtantech/toposort/v2"
+	"github.com/gtantech/toposort/v2/graph"
 )
 
 func main() {
 	g := graph.New[string, int]()
 
 	//Creating vertices for graph
-	A := vertex.New("A")
-	B := vertex.New("B")
-	C := vertex.New("C")
+	A := "A"
+	B := "B"
+	C := "C"
 
 	//link vertices via edges
 	/*
@@ -34,6 +33,6 @@ func main() {
 
 	//print order
 	for _, v := range order {
-		fmt.Printf("|%v|,", v.Value())
+		fmt.Printf("|%v|,", v)
 	}
 }
