@@ -2,40 +2,38 @@ package graph
 
 import (
 	"maps"
-
-	"github.com/gtantech/toposort/graph/vertex"
 )
 
-type Graph[V any, E any] interface {
-	OutgoingVertices(vertex vertex.Vertex[V]) func(yield func(vertex.Vertex[V]) bool)
-	IncomingVertices(vertex vertex.Vertex[V]) func(yield func(vertex.Vertex[V]) bool)
-	Vertices() func(yield func(vertex.Vertex[V]) bool)
-	AddVertex(v vertex.Vertex[V])
-	RemoveVertex(v vertex.Vertex[V])
-	AddEdge(value E, origin vertex.Vertex[V], destination vertex.Vertex[V])
-	GetEdgeValue(origin vertex.Vertex[V], destination vertex.Vertex[V]) (E, bool)
-	RemoveEdge(origin vertex.Vertex[V], destination vertex.Vertex[V])
+type Graph[V comparable, E any] interface {
+	OutgoingVertices(vertex V) func(yield func(V) bool)
+	IncomingVertices(vertex V) func(yield func(V) bool)
+	Vertices() func(yield func(V) bool)
+	AddVertex(v V)
+	RemoveVertex(v V)
+	AddEdge(value E, origin V, destination V)
+	GetEdgeValue(origin V, destination V) (E, bool)
+	RemoveEdge(origin V, destination V)
 }
 
 var _ Graph[string, string] = (*dag[string, string])(nil)
 
-type dag[V any, E any] struct {
-	outgoingVertices  map[vertex.Vertex[V]]map[vertex.Vertex[V]]E //maps the origin vertex, then destination vertex to the edge value
-	incomingVerticies map[vertex.Vertex[V]]map[vertex.Vertex[V]]E //maps the destination vertex, then origin vertex to the edge value
-	uniqueVerticies   map[vertex.Vertex[V]]struct{}
+type dag[V comparable, E any] struct {
+	outgoingVertices  map[V]map[V]E //maps the origin vertex, then destination vertex to the edge value
+	incomingVerticies map[V]map[V]E //maps the destination vertex, then origin vertex to the edge value
+	uniqueVerticies   map[V]struct{}
 }
 
-func New[V any, E any]() Graph[V, E] {
-	return &dag[V, E]{outgoingVertices: make(map[vertex.Vertex[V]]map[vertex.Vertex[V]]E), incomingVerticies: make(map[vertex.Vertex[V]]map[vertex.Vertex[V]]E), uniqueVerticies: make(map[vertex.Vertex[V]]struct{})}
+func New[V comparable, E any]() Graph[V, E] {
+	return &dag[V, E]{outgoingVertices: make(map[V]map[V]E), incomingVerticies: make(map[V]map[V]E), uniqueVerticies: make(map[V]struct{})}
 }
 
-func (d *dag[V, E]) AddVertex(v vertex.Vertex[V]) {
+func (d *dag[V, E]) AddVertex(v V) {
 	if _, ok := d.uniqueVerticies[v]; !ok {
 		d.uniqueVerticies[v] = struct{}{}
 	}
 }
 
-func (d *dag[V, E]) RemoveVertex(v vertex.Vertex[V]) {
+func (d *dag[V, E]) RemoveVertex(v V) {
 	delete(d.uniqueVerticies, v)
 	//ensure that if this vertex v is an origin vertex, any edge relating to it is deleted
 	for affectedDestionationVertex := range d.outgoingVertices[v] {
@@ -49,7 +47,7 @@ func (d *dag[V, E]) RemoveVertex(v vertex.Vertex[V]) {
 	delete(d.outgoingVertices, v)
 }
 
-func (d *dag[V, E]) RemoveEdge(origin vertex.Vertex[V], destination vertex.Vertex[V]) {
+func (d *dag[V, E]) RemoveEdge(origin V, destination V) {
 	outgoing, ok := d.outgoingVertices[origin]
 	if ok {
 		//origin vertex exists
@@ -57,7 +55,7 @@ func (d *dag[V, E]) RemoveEdge(origin vertex.Vertex[V], destination vertex.Verte
 	}
 }
 
-func (d *dag[V, E]) GetEdgeValue(origin vertex.Vertex[V], destination vertex.Vertex[V]) (E, bool) {
+func (d *dag[V, E]) GetEdgeValue(origin V, destination V) (E, bool) {
 	destinations, ok := d.outgoingVertices[origin]
 	var zero E
 	if !ok {
@@ -73,13 +71,13 @@ func (d *dag[V, E]) GetEdgeValue(origin vertex.Vertex[V], destination vertex.Ver
 	return value, true
 }
 
-func (d *dag[V, E]) AddEdge(value E, origin vertex.Vertex[V], destination vertex.Vertex[V]) {
+func (d *dag[V, E]) AddEdge(value E, origin V, destination V) {
 	if _, ok := d.outgoingVertices[origin]; !ok {
-		d.outgoingVertices[origin] = make(map[vertex.Vertex[V]]E)
+		d.outgoingVertices[origin] = make(map[V]E)
 	}
 	d.outgoingVertices[origin][destination] = value
 	if _, ok := d.incomingVerticies[destination]; !ok {
-		d.incomingVerticies[destination] = make(map[vertex.Vertex[V]]E)
+		d.incomingVerticies[destination] = make(map[V]E)
 	}
 	d.incomingVerticies[destination][origin] = value
 	d.uniqueVerticies[origin] = struct{}{}
@@ -87,20 +85,20 @@ func (d *dag[V, E]) AddEdge(value E, origin vertex.Vertex[V], destination vertex
 }
 
 // OutgoingVertices implements [graph.Graph].
-func (d *dag[V, E]) OutgoingVertices(v vertex.Vertex[V]) func(yield func(vertex.Vertex[V]) bool) {
+func (d *dag[V, E]) OutgoingVertices(v V) func(yield func(V) bool) {
 	destinations := d.outgoingVertices[v]
 
 	return maps.Keys(destinations)
 }
 
 // IncomingVertices implements [graph.Graph].
-func (d *dag[V, E]) IncomingVertices(v vertex.Vertex[V]) func(yield func(vertex.Vertex[V]) bool) {
+func (d *dag[V, E]) IncomingVertices(v V) func(yield func(V) bool) {
 	origins := d.incomingVerticies[v]
 
 	return maps.Keys(origins)
 }
 
 // Vertices implements [graph.Graph].
-func (d *dag[V, E]) Vertices() func(yield func(vertex.Vertex[V]) bool) {
+func (d *dag[V, E]) Vertices() func(yield func(V) bool) {
 	return maps.Keys(d.uniqueVerticies)
 }
