@@ -4,13 +4,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/gtantech/toposort/graph"
-	"github.com/gtantech/toposort/graph/vertex"
-	"github.com/gtantech/toposort/stack"
+	"github.com/gtantech/toposort/v2/graph"
+	"github.com/gtantech/toposort/v2/stack"
 )
 
-func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stack[vertex.Vertex[V]]) ([]vertex.Vertex[V], error) {
-	order := []vertex.Vertex[V]{}
+func dfsTopo[V comparable, E any](g graph.Graph[V, E], v V, s stack.Stack[V], isVisited map[V]bool) ([]V, error) {
+	order := []V{}
 	s.Push(v)
 	for !s.IsEmpty() {
 		top := s.Peek()
@@ -19,7 +18,7 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stac
 			if foundUnexploredEdge {
 				break
 			}
-			if opposite.IsVisited() {
+			if isVisited[opposite] {
 				continue
 			}
 			//discovery edge
@@ -29,7 +28,7 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stac
 				continue
 			}
 			//check error type
-			var e *stack.DuplicateValuesError[vertex.Vertex[V]]
+			var e *stack.DuplicateValuesError[V]
 			if errors.As(pushErr, &e) {
 				edgeValue, ok := g.GetEdgeValue(top, opposite)
 				if !ok {
@@ -41,19 +40,23 @@ func dfsTopo[V any, E any](g graph.Graph[V, E], v vertex.Vertex[V], s stack.Stac
 		}
 		if !foundUnexploredEdge {
 			//all edges explored
-			order = append([]vertex.Vertex[V]{top}, order...)
+			order = append([]V{top}, order...)
 			visited := s.Pop()
-			visited.SetVisited()
+			isVisited[visited] = true
 		}
 	}
 	return order, nil
 }
 
-func TopologicalSort[V any, E any](g graph.Graph[V, E]) ([]vertex.Vertex[V], error) {
-	order := []vertex.Vertex[V]{}
+func TopologicalSort[V comparable, E any](g graph.Graph[V, E]) ([]V, error) {
+	order := []V{}
+	isVisited := make(map[V]bool)
 	for v := range g.Vertices() {
-		if !v.IsVisited() {
-			suborder, err := dfsTopo(g, v, stack.New[vertex.Vertex[V]]())
+		isVisited[v] = false
+	}
+	for v := range g.Vertices() {
+		if !isVisited[v] {
+			suborder, err := dfsTopo(g, v, stack.New[V](), isVisited)
 			if err != nil {
 				return nil, err
 			}

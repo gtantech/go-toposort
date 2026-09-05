@@ -3,13 +3,11 @@ package toposort
 import (
 	"fmt"
 	"testing"
-
-	"github.com/gtantech/toposort/graph/vertex"
 )
 
 func TestErrorMsg(t *testing.T) {
-	v1 := vertex.New("1")
-	v2 := vertex.New("2")
+	v1 := "1"
+	v2 := "2"
 
 	err := CycleDetectedError[string, string]{"1-2", v1, v2}
 
